@@ -2,6 +2,8 @@
 
 **Split-custody, session-bound credential renewal for human-authorized AI agents.**
 
+[![verify](https://github.com/Algiras/scout-proofs/actions/workflows/verify.yml/badge.svg)](https://github.com/Algiras/scout-proofs/actions/workflows/verify.yml)
+
 An agent that works on a person's behalf needs that person's access to third-party APIs, often for longer than one access token lives. Something has to hold the refresh token and, for confidential OAuth clients, the client secret. SCOUT splits the two: the ephemeral **runner** holds the refresh token and the only key that opens stored tokens, and the **broker** holds the client secret. A copy of the broker's storage contains no token it can decrypt, and a runner alone cannot refresh.
 
 This repository contains the paper, a reference implementation in Rust with a Helm chart, and machine-checked proofs of the protocol in five tools.
