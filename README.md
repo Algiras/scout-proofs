@@ -28,6 +28,14 @@ python3 bounded/model_check.py --output-dir bounded
 (cd bounded && python3 -m unittest test_wire_codec)
 ```
 
+## How to cite
+
+No permission is needed to use this work. If you use it, please reference the paper:
+
+> Algimantas Krasauskas. *SCOUT: Split-Custody, Session-Bound Credential Renewal for Human-Authorized AI Agents*. November 2026.
+
+GitHub's "Cite this repository" button gives the same reference in BibTeX and APA form. The DOI will be added here once the paper is published.
+
 ## Licence
 
 Public domain. To the extent possible under law, the author has waived all copyright and related rights to this work under [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/); see `LICENSE`.

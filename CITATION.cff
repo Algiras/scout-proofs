@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "This work is in the public domain (CC0 1.0). No permission is needed to use it. If you use it, please cite the paper."
+title: "SCOUT proofs"
+type: software
+authors:
+  - family-names: Krasauskas
+    given-names: Algimantas
+repository-code: "https://github.com/Algiras/scout-proofs"
+license: CC0-1.0
+preferred-citation:
+  type: article
+  title: "SCOUT: Split-Custody, Session-Bound Credential Renewal for Human-Authorized AI Agents"
+  authors:
+    - family-names: Krasauskas
+      given-names: Algimantas
+  year: 2026
+  month: 11
