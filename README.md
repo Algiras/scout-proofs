@@ -85,6 +85,10 @@ The same checks run in CI on every push.
 
 This is a reference implementation, not a production service: one broker replica with a file-backed store, no TLS in the server itself, and a mock provider. Assertion-mediated renewal and the delegation supervisor are specified and proved in the models but not implemented. See [`impl/README.md`](impl/README.md).
 
+## Help wanted: arXiv endorsement
+
+The paper is published on Zenodo. To post it on arXiv in cs.CR as well, I need an endorsement from an existing arXiv author in computer science. If you can endorse, or know someone who might, please see [this issue](https://github.com/Algiras/scout-proofs/issues/1).
+
 ## How to cite
 
 If you use this work, cite the paper:
