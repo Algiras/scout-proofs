@@ -82,6 +82,7 @@ def tla(e):
 
 
 PARAM_DOMAIN = {"resp": "1..4"}
+COUNTERS = {"gen", "count0", "now", "epoch"}
 
 
 def tla_module(name, model, trans):
@@ -91,7 +92,9 @@ def tla_module(name, model, trans):
     sorts = dict(vs, **consts)
     out = [f"---- MODULE {name} ----", "EXTENDS Integers", "", "VARIABLES " + ", ".join(allv),
            "vars == <<" + ", ".join(allv) + ">>", ""]
-    typ = [f"  /\\ {v} \\in {'BOOLEAN' if sorts[v] == 'Bool' else '0..2'}" for v in allv]
+    # Integer state variables start at 0 unless Init says otherwise; the symbolic
+    # constants (g0, expiry) range over a small set. All of them are then bounded below.
+    typ = [f"  /\\ {v} \\in {'BOOLEAN' if sorts[v] == 'Bool' else ('0..2' if v in consts else '0..1')}" for v in allv]
     out += ["Init ==", *typ, f"  /\\ {tla(parse(model['init']))}", ""]
     names = []
     for tn, (params, guard, upd) in trans.items():
@@ -108,7 +111,8 @@ def tla_module(name, model, trans):
         else:
             out += [f"{tn} =="] + body + [""]
     out += ["Next == " + " \\/ ".join(names), "",
-            "Bound == " + " /\\ ".join(f"{v} \\in -1..4" for v in allv if sorts[v] == "Int"), ""]
+            # only counters grow without bound; every other integer takes values from finite domains
+            "Bound == " + (" /\\ ".join(f"{v} \\in 0..3" for v in allv if v in COUNTERS) or "TRUE"), ""]
     invs = []
     for i, (label, prop) in enumerate(model["safety"].items()):
         key = label.split(" ")[0]

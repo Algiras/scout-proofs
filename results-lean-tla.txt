@@ -1,0 +1,46 @@
+wrote 6 Lean files (63 theorems)
+wrote 32 TLA+ modules
+
+Lean 4 kernel check
+  CHECKED  ScoutSession.lean: 12 theorems
+  CHECKED  ScoutDelivery.lean: 7 theorems
+  CHECKED  ScoutRenewal.lean: 13 theorems
+  CHECKED  ScoutAssertion.lean: 11 theorems
+  CHECKED  ScoutTeardown.lean: 13 theorems
+  CHECKED  ScoutAuthorization.lean: 7 theorems
+
+TLC model checking
+  PASS          Scout_session: 280 distinct states
+  VIOLATED      Scout_session_x_consent_before_bind (F1)
+  VIOLATED      Scout_session_x_rebind_after_consent (F2)
+  VIOLATED      Scout_session_x_no_principal_lock (F3)
+  VIOLATED      Scout_session_x_expired_session_reopened (F4)
+  PASS          Scout_delivery: 24 distinct states
+  VIOLATED      Scout_delivery_x_new_proof_gets_new_response (D1)
+  VIOLATED      Scout_delivery_x_session_write_resets_delivery (D1)
+  VIOLATED      Scout_delivery_x_refetch_ignores_revocation (D2)
+  PASS          Scout_renewal: 23616 distinct states
+  VIOLATED      Scout_renewal_x_release_reservation_on_timeout (S1)
+  VIOLATED      Scout_renewal_x_no_commitment_check (S2)
+  VIOLATED      Scout_renewal_x_competing_operation_admitted (S1)
+  VIOLATED      Scout_renewal_x_generation_advances_without_stored_reply (S5)
+  VIOLATED      Scout_renewal_x_reseal_on_retry (S3)
+  VIOLATED      Scout_renewal_x_release_after_closure (S4)
+  PASS          Scout_assertion: 2352 distinct states
+  VIOLATED      Scout_assertion_x_fresh_assertion_on_retry (M1)
+  VIOLATED      Scout_assertion_x_reservation_released_when_assertion_expires (M1)
+  VIOLATED      Scout_assertion_x_issue_without_digest_check (M2)
+  VIOLATED      Scout_assertion_x_issue_after_closure (M2)
+  VIOLATED      Scout_assertion_x_assertion_returned_after_expiry (M3)
+  PASS          Scout_teardown: 8 distinct states
+  VIOLATED      Scout_teardown_x_revoke_any_submitted_token (T1)
+  VIOLATED      Scout_teardown_x_error_or_timeout_reported_as_revoked (T2)
+  VIOLATED      Scout_teardown_x_renewal_completes_after_closure (T3)
+  VIOLATED      Scout_teardown_x_delete_before_close (T4)
+  VIOLATED      Scout_teardown_x_closure_keeps_ciphertext (T5)
+  VIOLATED      Scout_teardown_x_revoke_after_key_deleted (T6)
+  PASS          Scout_authorization: 80 distinct states
+  VIOLATED      Scout_authorization_x_check_then_reserve (A1)
+  VIOLATED      Scout_authorization_x_dispatch_without_revalidation (A2)
+
+RESULT: all checks passed

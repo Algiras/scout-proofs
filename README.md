@@ -10,6 +10,8 @@ Companion to "SCOUT: Split-Custody, Session-Bound Credential Renewal for Human-A
 | `obligations/` | The 41 generated SMT-LIB 2 proof obligations; each must be `unsat` | `z3 obligations/<file>.smt2` or any SMT-LIB solver |
 | `results.txt` | Output of `scout_smt.py` | |
 | `export.py`, `lean/` | The same six models exported to Lean 4: 63 theorems (41 invariant obligations, 22 safety properties), checked by the Lean kernel | `python3 export.py --check-lean` (needs `lean`; 4.36.0 used) |
+| `export.py`, `tla/` | The same six models and their 26 broken variants exported to TLA+: 32 modules, model-checked by TLC within finite bounds | `python3 export.py --check-tla /path/to/tla2tools.jar` (needs Java; TLA+ tools 1.8.0 used) |
+| `results-lean-tla.txt` | Output of the Lean and TLC run | |
 | `symbolic/gen.py` | Generates and runs eight ProVerif models of delivery, renewal and revocation (three SCOUT scenarios, three broken variants, two baselines) and checks each result against its expected value | `python3 symbolic/gen.py` (needs `proverif`; 2.05 used) |
 | `symbolic/gen_assertion.py` | Six two-phase ProVerif models: broker compromise at renewal, and assertion-mediated renewal with shared or per-grant client identity | `python3 symbolic/gen_assertion.py` |
 | `symbolic/*.pv`, `*.log`, `results*.txt` | Generated models, full ProVerif output, summary | |
@@ -23,7 +25,7 @@ These are proofs about models of the protocol, not about an implementation; see 
 
 ```sh
 python3 scout_smt.py                         # Z3: 41 induction obligations, 26 broken variants
-python3 export.py --check-lean                # Lean 4: 63 theorems
+python3 export.py --check-lean --check-tla tla2tools.jar   # Lean 4: 63 theorems; TLC: 32 modules
 python3 symbolic/gen.py                      # ProVerif: 8 scenarios
 python3 symbolic/gen_assertion.py            # ProVerif: 6 two-phase scenarios
 python3 bounded/model_check.py --output-dir bounded
