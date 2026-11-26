@@ -85,7 +85,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - uses: azure/setup-helm@v4
+      - uses: azure/setup-helm@v5
       - run: helm lint deploy/helm/scout
       - run: helm template scout deploy/helm/scout > /dev/null
 
@@ -106,7 +106,7 @@ jobs:
         with:
           cluster_name: scout-demo
       - run: kind load docker-image scout:dev --name scout-demo
-      - uses: azure/setup-helm@v4
+      - uses: azure/setup-helm@v5
       - name: Validate rendered objects against the API server
         run: helm template scout deploy/helm/scout | kubectl apply --dry-run=server -f -
       - run: helm install demo deploy/helm/scout --wait --timeout 3m
