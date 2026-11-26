@@ -2,7 +2,7 @@
 
 **Split-custody, session-bound credential renewal for human-authorized AI agents.**
 
-[![verify](https://github.com/Algiras/scout-proofs/actions/workflows/verify.yml/badge.svg)](https://github.com/Algiras/scout-proofs/actions/workflows/verify.yml)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24568572.svg)](https://doi.org/10.5281/zenodo.24568572) [![verify](https://github.com/Algiras/scout-proofs/actions/workflows/verify.yml/badge.svg)](https://github.com/Algiras/scout-proofs/actions/workflows/verify.yml)
 
 An agent that works on a person's behalf needs that person's access to third-party APIs, often for longer than one access token lives. Something has to hold the refresh token and, for confidential OAuth clients, the client secret. SCOUT splits the two: the ephemeral **runner** holds the refresh token and the only key that opens stored tokens, and the **broker** holds the client secret. A copy of the broker's storage contains no token it can decrypt, and a runner alone cannot refresh.
 
@@ -89,9 +89,9 @@ This is a reference implementation, not a production service: one broker replica
 
 If you use this work, cite the paper:
 
-> Algimantas Krasauskas. *SCOUT: Split-Custody, Session-Bound Credential Renewal for Human-Authorized AI Agents*. November 2026.
+> Algimantas Krasauskas. *SCOUT: Split-Custody, Session-Bound Credential Renewal for Human-Authorized AI Agents*. November 2026. Zenodo. https://doi.org/10.5281/zenodo.24568572
 
-GitHub's "Cite this repository" button gives the same reference in BibTeX and APA form. The DOI will be added here once the paper is published.
+GitHub's "Cite this repository" button gives the same reference in BibTeX and APA form. That DOI always resolves to the latest version; the first published version is https://doi.org/10.5281/zenodo.24568573.
 
 ## Licence
 
