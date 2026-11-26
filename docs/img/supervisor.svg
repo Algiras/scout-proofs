@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -60 1140 610" width="2280" height="1220">
+<rect x="-20" y="-60" width="1140" height="610" fill="#ffffff"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="20px" fill="#1e1e1e" style="white-space: pre"><text x="380.53" y="-3.10" text-anchor="start">ISOLATED CONTAINER MEDIATION</text></g>
+<rect x="20" y="40" width="400" height="240" rx="32" fill="none" stroke="#495057" stroke-width="2" stroke-dasharray="8 9.5"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="17px" fill="#1e1e1e" style="white-space: pre"><text x="160.47" y="66.36" text-anchor="start">Agent container</text></g>
+<rect x="50" y="110" width="340" height="130" rx="32" fill="#f1f3f5" stroke="#495057" stroke-width="1.5"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="19px" fill="#1e1e1e" style="white-space: pre"><text x="161.39" y="156.06" text-anchor="start">Workload</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="17px" fill="#1e1e1e" style="white-space: pre"><text x="123.16" y="178.12" text-anchor="start">No provider token or keys</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="17px" fill="#1e1e1e" style="white-space: pre"><text x="148.20" y="199.37" text-anchor="start">No network access</text></g>
+<rect x="640" y="40" width="440" height="240" rx="32" fill="none" stroke="#495057" stroke-width="2" stroke-dasharray="8 9.5"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="17px" fill="#1e1e1e" style="white-space: pre"><text x="782.06" y="66.36" text-anchor="start">Supervisor container</text></g>
+<rect x="670" y="110" width="380" height="130" rx="32" fill="#f1f3f5" stroke="#495057" stroke-width="1.5"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="19px" fill="#1e1e1e" style="white-space: pre"><text x="796.11" y="144.81" text-anchor="start">Supervisor</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="17px" fill="#1e1e1e" style="white-space: pre"><text x="757.48" y="166.87" text-anchor="start">Holds root keys and tokens</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="17px" fill="#1e1e1e" style="white-space: pre"><text x="750.39" y="188.12" text-anchor="start">Checks each request against</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="17px" fill="#1e1e1e" style="white-space: pre"><text x="791.97" y="209.37" text-anchor="start">one approved row</text></g>
+<path d="M390.00 150.00 L670.00 150.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M646.51 141.45 L670.00 150.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M646.51 158.55 L670.00 150.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="16px" fill="#1e1e1e" style="white-space: pre"><text x="469.51" y="119.52" text-anchor="start">Bounded handle;</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="16px" fill="#1e1e1e" style="white-space: pre"><text x="481.98" y="139.52" text-anchor="start">exact request</text></g>
+<path d="M670.00 200.00 L390.00 200.00" fill="none" stroke="#343a40" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="8 10"/><path d="M413.49 208.55 L390.00 200.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M413.49 191.45 L390.00 200.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="16px" fill="#1e1e1e" style="white-space: pre"><text x="501.10" y="221.52" text-anchor="start">Diff only</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="16px" fill="#1e1e1e" style="white-space: pre"><text x="382.38" y="313.52" text-anchor="start">Local domain socket on read-only volume</text></g>
+<rect x="670" y="400" width="380" height="110" rx="27.5" fill="#f1f3f5" stroke="#495057" stroke-width="1.5"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="19px" fill="#1e1e1e" style="white-space: pre"><text x="806.14" y="436.06" text-anchor="start">Provider</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="17px" fill="#1e1e1e" style="white-space: pre"><text x="769.32" y="458.12" text-anchor="start">Fixed-commit repository</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="17px" fill="#1e1e1e" style="white-space: pre"><text x="754.19" y="479.37" text-anchor="start">comparison (e.g., GitHub)</text></g>
+<path d="M860.00 240.00 L860.00 400.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M868.55 376.51 L860.00 400.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M851.45 376.51 L860.00 400.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="16px" fill="#1e1e1e" style="white-space: pre"><text x="872.00" y="343.52" text-anchor="start">Fixed HTTPS GET</text></g>
+</svg>

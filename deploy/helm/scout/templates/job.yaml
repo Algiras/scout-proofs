@@ -1,0 +1,36 @@
+# SPDX-License-Identifier: CC-BY-4.0
+{{- if .Values.exampleJob.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "scout.fullname" . }}-example
+  labels: {{- include "scout.labels" . | nindent 4 }}
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        {{- include "scout.labels" . | nindent 8 }}
+        app.kubernetes.io/component: runner
+    spec:
+      restartPolicy: Never
+      {{- include "scout.podSecurity" . | nindent 6 }}
+      containers:
+        - name: runner
+          image: {{ include "scout.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- include "scout.containerSecurity" . | nindent 10 }}
+          command: ["/usr/local/bin/scout-run"]
+          args:
+            - --broker={{ include "scout.brokerUrl" . }}
+            - --auto-consent=true
+            - --renew-margin={{ .Values.exampleJob.renewMarginSeconds }}
+            - --poll-every=2
+            - --
+            - /usr/local/bin/scout-whoami
+            - http://{{ include "scout.providerHost" . }}:{{ .Values.mockProvider.frontPort }}/api/whoami
+            - {{ .Values.exampleJob.workloadSeconds | quote }}
+          resources:
+            requests: { cpu: 25m, memory: 16Mi }
+            limits: { memory: 64Mi }
+{{- end }}

@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: CC-BY-4.0
+apiVersion: v2
+name: scout
+description: Reference SCOUT credential-renewal broker with an optional mock OAuth provider and demo runner Job
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

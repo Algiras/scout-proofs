@@ -1,0 +1,87 @@
+# SPDX-License-Identifier: CC-BY-4.0
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "scout.fullname" . }}-store
+  labels: {{- include "scout.labels" . | nindent 4 }}
+spec:
+  accessModes: ["ReadWriteOnce"]
+  {{- with .Values.broker.storage.storageClassName }}
+  storageClassName: {{ . | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.broker.storage.size }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "scout.fullname" . }}-broker
+  labels: {{- include "scout.labels" . | nindent 4 }}
+    app.kubernetes.io/component: broker
+spec:
+  # One replica: the file store is a single-writer snapshot.
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "scout.labels" . | nindent 6 }}
+      app.kubernetes.io/component: broker
+  template:
+    metadata:
+      labels:
+        {{- include "scout.labels" . | nindent 8 }}
+        app.kubernetes.io/component: broker
+    spec:
+      {{- include "scout.podSecurity" . | nindent 6 }}
+      containers:
+        - name: scoutd
+          image: {{ include "scout.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- include "scout.containerSecurity" . | nindent 10 }}
+          args:
+            - --listen=0.0.0.0:{{ .Values.broker.port }}
+            - --public-base-url=$(PUBLIC_BASE_URL)
+            - --store-file=/data/store.json
+            - --client-id=$(CLIENT_ID)
+            - --provider-auth-url=$(PROVIDER_AUTH_URL)
+            - --provider-token-url=$(PROVIDER_TOKEN_URL)
+            - --provider-revoke-url=$(PROVIDER_REVOKE_URL)
+            - --scope={{ .Values.provider.scope }}
+            - --default-ttl={{ .Values.broker.defaultTtlSeconds }}
+          env:
+            - { name: PUBLIC_BASE_URL, valueFrom: { configMapKeyRef: { name: {{ include "scout.fullname" . }}-config, key: broker-url } } }
+            - { name: CLIENT_ID, valueFrom: { configMapKeyRef: { name: {{ include "scout.fullname" . }}-config, key: client-id } } }
+            - { name: PROVIDER_AUTH_URL, valueFrom: { configMapKeyRef: { name: {{ include "scout.fullname" . }}-config, key: provider-auth-url } } }
+            - { name: PROVIDER_TOKEN_URL, valueFrom: { configMapKeyRef: { name: {{ include "scout.fullname" . }}-config, key: provider-token-url } } }
+            - { name: PROVIDER_REVOKE_URL, valueFrom: { configMapKeyRef: { name: {{ include "scout.fullname" . }}-config, key: provider-revoke-url } } }
+            - { name: SCOUT_CLIENT_SECRET, valueFrom: { secretKeyRef: { name: {{ include "scout.secretName" . }}, key: client-secret } } }
+            - { name: SCOUT_COMMIT_KEY, valueFrom: { secretKeyRef: { name: {{ include "scout.secretName" . }}, key: commit-key } } }
+          ports:
+            - { name: http, containerPort: {{ .Values.broker.port }} }
+          livenessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 3
+          resources: {{- toYaml .Values.broker.resources | nindent 12 }}
+          volumeMounts:
+            - { name: store, mountPath: /data }
+      volumes:
+        - name: store
+          persistentVolumeClaim:
+            claimName: {{ include "scout.fullname" . }}-store
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "scout.fullname" . }}-broker
+  labels: {{- include "scout.labels" . | nindent 4 }}
+spec:
+  selector:
+    {{- include "scout.labels" . | nindent 4 }}
+    app.kubernetes.io/component: broker
+  ports:
+    - { name: http, port: {{ .Values.broker.port }}, targetPort: http }

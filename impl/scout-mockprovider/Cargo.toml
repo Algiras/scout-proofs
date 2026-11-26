@@ -1,0 +1,13 @@
+[package]
+name = "scout-mockprovider"
+version = "0.1.0"
+edition = "2021"
+license = "CC-BY-4.0"
+
+[[bin]]
+name = "mockprovider"
+path = "src/main.rs"
+
+[dependencies]
+scout-wire = { path = "../scout-wire" }
+serde_json = "1"

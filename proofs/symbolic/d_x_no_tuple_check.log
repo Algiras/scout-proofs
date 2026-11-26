@@ -1,0 +1,298 @@
+Process 0 (that is, the initial process):
+{1}new skSup: sskey;
+{2}new rootToken: bitstring;
+{3}new skChild: sskey;
+{4}out(net, spk(skSup));
+{5}out(net, skChild);
+(
+    {6}!
+    {7}new op: bitstring;
+    {8}event Approved(op);
+    {9}out(net, op);
+    {10}out(appr, op)
+) | (
+    {11}let rootTok: bitstring = rootToken in
+    (
+        {12}!
+        {13}in(prov, (=rootTok,op_1: bitstring));
+        {14}event Executed(op_1);
+        {15}out(net, op_1)
+    ) | (
+        {16}!
+        {17}in(net, (=rootTok,op_2: bitstring));
+        {18}event Executed(op_2);
+        {19}out(net, op_2)
+    )
+) | (
+    {20}let skSup_1: sskey = skSup in
+    {21}let rootToken_1: bitstring = rootToken in
+    (
+        {22}!
+        {23}in(appr, op_3: bitstring);
+        {24}in(net, cvk: spkey);
+        {25}out(net, sign((handleTag,cvk,op_3),skSup_1))
+    ) | (
+        {26}!
+        {27}in(net, (h: bitstring,rq: bitstring));
+        {28}let (=handleTag,cvk_1: spkey,hop: bitstring) = checksign(h,spk(skSup_1)) in
+        {29}let (=reqTag,rop: bitstring) = checksign(rq,cvk_1) in
+        {30}event ChildServed(rop);
+        {31}out(prov, (rootToken_1,rop))
+    )
+)
+
+--  Process 1 (that is, process 0, encoded for secret rootToken_1,rootToken, with let moved downwards):
+{1}new skSup: sskey;
+{2}new rootToken: bitstring;
+{3}event rootToken_contains(rootToken);
+{4}new skChild: sskey;
+{5}out(net, spk(skSup));
+{6}out(net, skChild);
+(
+    {7}!
+    {8}new op: bitstring;
+    {9}event Approved(op);
+    {10}out(net, op);
+    {11}out(appr, op)
+) | (
+    {12}let rootTok: bitstring = rootToken in
+    (
+        {13}!
+        {14}in(prov, (=rootTok,op_1: bitstring));
+        {15}event Executed(op_1);
+        {16}out(net, op_1)
+    ) | (
+        {17}!
+        {18}in(net, (=rootTok,op_2: bitstring));
+        {19}event Executed(op_2);
+        {20}out(net, op_2)
+    )
+) | (
+    {22}let rootToken_1: bitstring = rootToken in
+    {23}event rootToken_contains(rootToken_1);
+    {21}let skSup_1: sskey = skSup in
+    (
+        {24}!
+        {25}in(appr, op_3: bitstring);
+        {26}in(net, cvk: spkey);
+        {27}out(net, sign((handleTag,cvk,op_3),skSup_1))
+    ) | (
+        {28}!
+        {29}in(net, (h: bitstring,rq: bitstring));
+        {30}let (=handleTag,cvk_1: spkey,hop: bitstring) = checksign(h,spk(skSup_1)) in
+        {31}let (=reqTag,rop: bitstring) = checksign(rq,cvk_1) in
+        {32}event ChildServed(rop);
+        {33}out(prov, (rootToken_1,rop))
+    )
+)
+
+-- Query event(Executed(x)) ==> event(Approved(x)) in process 1.
+Translating the process into Horn clauses...
+Completing...
+Starting query event(Executed(x)) ==> event(Approved(x))
+goal reachable: b-event(Approved(op_4)) && attacker(x) -> event(Executed(x))
+Abbreviations:
+op_4 = op[!1 = @sid]
+
+Derivation:
+Abbreviations:
+op_4 = op[!1 = @sid]
+
+1. The attacker has some term k.
+attacker(k).
+
+2. We assume as hypothesis that
+attacker(x).
+
+3. Using the function reqTag the attacker may obtain reqTag.
+attacker(reqTag).
+
+4. By 3, the attacker may know reqTag.
+By 2, the attacker may know x.
+Using the function 2-tuple the attacker may obtain (reqTag,x).
+attacker((reqTag,x)).
+
+5. By 4, the attacker may know (reqTag,x).
+By 1, the attacker may know k.
+Using the function sign the attacker may obtain sign((reqTag,x),k).
+attacker(sign((reqTag,x),k)).
+
+6. The event Approved(op_4) may be executed at {9}.
+So the message op_4 may be sent on channel appr[] at output {11}.
+mess(appr[],op_4).
+
+7. By 1, the attacker may know k.
+Using the function spk the attacker may obtain spk(k).
+attacker(spk(k)).
+
+8. The message op_4 that may be sent on channel appr[] by 6 may be received at input {25}.
+The message spk(k) that the attacker may have by 7 may be received at input {26}.
+So the message sign((handleTag,spk(k),op_4),skSup[]) may be sent to the attacker at output {27}.
+attacker(sign((handleTag,spk(k),op_4),skSup[])).
+
+9. By 8, the attacker may know sign((handleTag,spk(k),op_4),skSup[]).
+By 5, the attacker may know sign((reqTag,x),k).
+Using the function 2-tuple the attacker may obtain (sign((handleTag,spk(k),op_4),skSup[]),sign((reqTag,x),k)).
+attacker((sign((handleTag,spk(k),op_4),skSup[]),sign((reqTag,x),k))).
+
+10. The message (sign((handleTag,spk(k),op_4),skSup[]),sign((reqTag,x),k)) that the attacker may have by 9 may be received at input {29}.
+So the message (rootToken[],x) may be sent on channel prov[] at output {33}.
+mess(prov[],(rootToken[],x)).
+
+11. The message (rootToken[],x) that may be sent on channel prov[] by 10 may be received at input {14}.
+So event Executed(x) may be executed at {15}.
+event(Executed(x)).
+
+12. By 11, event(Executed(x)).
+The goal is reached, represented in the following fact:
+event(Executed(x)).
+
+
+A more detailed output of the traces is available with
+  set traceDisplay = long.
+
+new skSup: sskey creating skSup_2 at {1}
+
+new rootToken: bitstring creating rootToken_2 at {2}
+
+event rootToken_contains(rootToken_2) at {3}
+
+new skChild: sskey creating skChild_1 at {4}
+
+out(net, ~M) with ~M = spk(skSup_2) at {5}
+
+out(net, ~M_1) with ~M_1 = skChild_1 at {6}
+
+event rootToken_contains(rootToken_2) at {23}
+
+new op: bitstring creating op_5 at {8} in copy a
+
+event Approved(op_5) at {9} in copy a
+
+out(net, ~M_2) with ~M_2 = op_5 at {10} in copy a
+
+out(appr, op_5) at {11} in copy a received at {25} in copy a_1
+
+in(net, spk(a_2)) at {26} in copy a_1
+
+out(net, ~M_3) with ~M_3 = sign((handleTag,spk(a_2),op_5),skSup_2) at {27} in copy a_1
+
+in(net, (~M_3,sign((reqTag,a_3),a_2))) with ~M_3 = sign((handleTag,spk(a_2),op_5),skSup_2) at {29} in copy a_4
+
+event ChildServed(a_3) at {32} in copy a_4
+
+out(prov, (rootToken_2,a_3)) at {33} in copy a_4 received at {14} in copy a_5
+
+event Executed(a_3) at {15} in copy a_5 (goal)
+
+The event Executed(a_3) is executed at {15} in copy a_5.
+A trace has been found.
+RESULT event(Executed(x)) ==> event(Approved(x)) is false.
+-- Query secret rootToken_1,rootToken encoded as not (event(rootToken_contains(v)) && attacker(v)) in process 1.
+Translating the process into Horn clauses...
+Completing...
+Starting query secret rootToken_1,rootToken
+RESULT secret rootToken_1,rootToken is true.
+-- Query not event(ChildServed(x)) in process 1.
+Translating the process into Horn clauses...
+Completing...
+Starting query not event(ChildServed(x))
+goal reachable: attacker(x) -> event(ChildServed(x))
+
+Derivation:
+Abbreviations:
+op_4 = op[!1 = @sid]
+
+1. The attacker has some term k.
+attacker(k).
+
+2. We assume as hypothesis that
+attacker(x).
+
+3. Using the function reqTag the attacker may obtain reqTag.
+attacker(reqTag).
+
+4. By 3, the attacker may know reqTag.
+By 2, the attacker may know x.
+Using the function 2-tuple the attacker may obtain (reqTag,x).
+attacker((reqTag,x)).
+
+5. By 4, the attacker may know (reqTag,x).
+By 1, the attacker may know k.
+Using the function sign the attacker may obtain sign((reqTag,x),k).
+attacker(sign((reqTag,x),k)).
+
+6. The message op_4 may be sent on channel appr[] at output {11}.
+mess(appr[],op_4).
+
+7. By 1, the attacker may know k.
+Using the function spk the attacker may obtain spk(k).
+attacker(spk(k)).
+
+8. The message op_4 that may be sent on channel appr[] by 6 may be received at input {25}.
+The message spk(k) that the attacker may have by 7 may be received at input {26}.
+So the message sign((handleTag,spk(k),op_4),skSup[]) may be sent to the attacker at output {27}.
+attacker(sign((handleTag,spk(k),op_4),skSup[])).
+
+9. By 8, the attacker may know sign((handleTag,spk(k),op_4),skSup[]).
+By 5, the attacker may know sign((reqTag,x),k).
+Using the function 2-tuple the attacker may obtain (sign((handleTag,spk(k),op_4),skSup[]),sign((reqTag,x),k)).
+attacker((sign((handleTag,spk(k),op_4),skSup[]),sign((reqTag,x),k))).
+
+10. The message (sign((handleTag,spk(k),op_4),skSup[]),sign((reqTag,x),k)) that the attacker may have by 9 may be received at input {29}.
+So event ChildServed(x) may be executed at {32}.
+event(ChildServed(x)).
+
+11. By 10, event(ChildServed(x)).
+The goal is reached, represented in the following fact:
+event(ChildServed(x)).
+
+
+A more detailed output of the traces is available with
+  set traceDisplay = long.
+
+new skSup: sskey creating skSup_2 at {1}
+
+new rootToken: bitstring creating rootToken_2 at {2}
+
+event rootToken_contains(rootToken_2) at {3}
+
+new skChild: sskey creating skChild_1 at {4}
+
+out(net, ~M) with ~M = spk(skSup_2) at {5}
+
+out(net, ~M_1) with ~M_1 = skChild_1 at {6}
+
+event rootToken_contains(rootToken_2) at {23}
+
+new op: bitstring creating op_5 at {8} in copy a
+
+event Approved(op_5) at {9} in copy a
+
+out(net, ~M_2) with ~M_2 = op_5 at {10} in copy a
+
+out(appr, op_5) at {11} in copy a received at {25} in copy a_1
+
+in(net, spk(a_2)) at {26} in copy a_1
+
+out(net, ~M_3) with ~M_3 = sign((handleTag,spk(a_2),op_5),skSup_2) at {27} in copy a_1
+
+in(net, (~M_3,sign((reqTag,a_3),a_2))) with ~M_3 = sign((handleTag,spk(a_2),op_5),skSup_2) at {29} in copy a_4
+
+event ChildServed(a_3) at {32} in copy a_4 (goal)
+
+The event ChildServed(a_3) is executed at {32} in copy a_4.
+A trace has been found.
+RESULT not event(ChildServed(x)) is false.
+
+--------------------------------------------------------------
+Verification summary:
+
+Query event(Executed(x)) ==> event(Approved(x)) is false.
+
+Query secret rootToken_1,rootToken is true.
+
+Query not event(ChildServed(x)) is false.
+
+--------------------------------------------------------------
+

@@ -1,0 +1,3 @@
+[workspace]
+resolver = "2"
+members = ["scout-core", "scout-wire", "scout-mockprovider", "scout-broker", "scout-runner"]

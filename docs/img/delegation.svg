@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -60 1040 630" width="2080" height="1260">
+<rect x="0" y="-60" width="1040" height="630" fill="#ffffff"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="20px" fill="#1e1e1e" style="white-space: pre"><text x="294.99" y="-3.10" text-anchor="start">CHILD DELEGATION (DESIGN)</text></g>
+<rect x="40" y="40" width="360" height="90" rx="22.5" fill="#f1f3f5" stroke="#495057" stroke-width="1.5"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="19px" fill="#1e1e1e" style="white-space: pre"><text x="112.81" y="77.31" text-anchor="start">Authorization Record</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="17px" fill="#1e1e1e" style="white-space: pre"><text x="102.37" y="99.36" text-anchor="start">Human-approved root authority</text></g>
+<rect x="640" y="40" width="360" height="90" rx="22.5" fill="#f1f3f5" stroke="#495057" stroke-width="1.5"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="19px" fill="#1e1e1e" style="white-space: pre"><text x="773.53" y="77.31" text-anchor="start">Parent</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="17px" fill="#1e1e1e" style="white-space: pre"><text x="710.38" y="99.36" text-anchor="start">Parent bounds and child task</text></g>
+<rect x="260" y="230" width="520" height="110" rx="27.5" fill="#f1f3f5" stroke="#495057" stroke-width="1.5"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="19px" fill="#1e1e1e" style="white-space: pre"><text x="456.11" y="266.06" text-anchor="start">Supervisor</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="17px" fill="#1e1e1e" style="white-space: pre"><text x="363.62" y="288.12" text-anchor="start">Intersects root, parent, request and policy</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="17px" fill="#1e1e1e" style="white-space: pre"><text x="373.55" y="309.37" text-anchor="start">Narrows handle; checks ancestor state</text></g>
+<rect x="340" y="440" width="360" height="90" rx="22.5" fill="#f1f3f5" stroke="#495057" stroke-width="1.5"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="19px" fill="#1e1e1e" style="white-space: pre"><text x="479.87" y="477.31" text-anchor="start">Child</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="17px" fill="#1e1e1e" style="white-space: pre"><text x="374.94" y="499.37" text-anchor="start">Bounded handle for approved diff read</text></g>
+<path d="M220.00 130.00 L220.00 180.00 L420.00 180.00 L420.00 230.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M428.55 206.51 L420.00 230.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M411.45 206.51 L420.00 230.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M820.00 130.00 L820.00 180.00 L620.00 180.00 L620.00 230.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M628.55 206.51 L620.00 230.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M611.45 206.51 L620.00 230.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M520.00 340.00 L520.00 440.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M528.55 416.51 L520.00 440.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M511.45 416.51 L520.00 440.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="16px" fill="#1e1e1e" style="white-space: pre"><text x="532.00" y="391.52" text-anchor="start">Bound child handle</text></g>
+</svg>

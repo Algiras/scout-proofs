@@ -1,0 +1,52 @@
+# SPDX-License-Identifier: CC-BY-4.0
+image:
+  repository: scout
+  tag: dev
+  pullPolicy: IfNotPresent
+
+broker:
+  port: 8080
+  defaultTtlSeconds: 3600
+  # Public base URL used for the OAuth redirect URI; defaults to the in-cluster Service URL.
+  publicBaseUrl: ""
+  storage:
+    size: 64Mi
+    storageClassName: ""
+  resources:
+    requests: { cpu: 50m, memory: 32Mi }
+    limits: { memory: 128Mi }
+
+# Used when mockProvider.enabled is false.
+provider:
+  clientId: scout-demo
+  authUrl: ""
+  tokenUrl: ""
+  revokeUrl: ""
+  scope: read
+
+# Client secret and commitment key. Either name an existing Secret with keys
+# `client-secret` and `commit-key`, or supply values. If both are left empty the
+# chart generates random values with randAlphaNum: that is for the demo only,
+# use an existing Secret for anything else.
+secrets:
+  existingSecret: ""
+  clientSecret: ""
+  commitKey: ""
+
+mockProvider:
+  enabled: true
+  autoApprove: true
+  accessTtlSeconds: 20
+  frontPort: 9000   # authorize, whoami, debug
+  backPort: 9001    # token and revocation, reachable only from the broker
+  resources:
+    requests: { cpu: 25m, memory: 16Mi }
+    limits: { memory: 64Mi }
+
+exampleJob:
+  enabled: true
+  renewMarginSeconds: 12
+  workloadSeconds: 40
+
+networkPolicy:
+  enabled: true

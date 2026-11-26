@@ -1,0 +1,31 @@
+# SPDX-License-Identifier: CC-BY-4.0
+# Demo only: the secrets below are throwaway values for a local, auto-approving mock provider.
+x-image: &image
+  build: .
+  image: scout:dev
+
+services:
+  mockprovider:
+    <<: *image
+    entrypoint: ["/usr/local/bin/mockprovider"]
+    command: ["--listen", "0.0.0.0:9000", "--client-id", "scout-demo", "--client-secret", "demo-client-secret-not-for-production", "--auto-approve", "true", "--access-ttl", "8"]
+
+  scoutd:
+    <<: *image
+    depends_on: [mockprovider]
+    command:
+      - --listen=0.0.0.0:8080
+      - --public-base-url=http://scoutd:8080
+      - --provider-auth-url=http://mockprovider:9000/authorize
+      - --provider-token-url=http://mockprovider:9000/token
+      - --provider-revoke-url=http://mockprovider:9000/revoke
+      - --client-id=scout-demo
+      - --client-secret=demo-client-secret-not-for-production
+      - --commit-key=demo-commitment-key-not-for-production
+
+  runner:
+    <<: *image
+    depends_on: [scoutd]
+    entrypoint: ["/usr/local/bin/scout-run"]
+    # Access tokens live 8 s; the runner renews 5 s before expiry, so a 12 s workload sees renewals.
+    command: ["--broker", "http://scoutd:8080", "--auto-consent", "true", "--renew-margin", "5", "--poll-every", "1", "--", "/usr/local/bin/scout-whoami", "http://mockprovider:9000/api/whoami", "12"]

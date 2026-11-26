@@ -1,0 +1,13 @@
+[package]
+name = "scout-core"
+version = "0.1.0"
+edition = "2021"
+description = "Pure SCOUT protocol state machines (no I/O, no clock, no crypto)"
+license = "CC-BY-4.0"
+
+[features]
+# Deliberately defective transition functions, used to show the Kani proofs can fail.
+broken-variants = []
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(kani)'] }

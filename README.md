@@ -1,40 +1,91 @@
-# SCOUT proofs
+# SCOUT
 
-Machine-checked proofs and models for SCOUT, a split-custody, session-bound credential renewal protocol for human-authorized AI agents.
+**Split-custody, session-bound credential renewal for human-authorized AI agents.**
 
-Companion to "SCOUT: Split-Custody, Session-Bound Credential Renewal for Human-Authorized AI Agents".
+An agent that works on a person's behalf needs that person's access to third-party APIs, often for longer than one access token lives. Something has to hold the refresh token and, for confidential OAuth clients, the client secret. SCOUT splits the two: the ephemeral **runner** holds the refresh token and the only key that opens stored tokens, and the **broker** holds the client secret. A copy of the broker's storage contains no token it can decrypt, and a runner alone cannot refresh.
 
-| Path | What it is | How to run |
-|---|---|---|
-| `scout_smt.py` | Inductive-invariant proofs (Z3) for the session, delivery, renewal, assertion-mediated renewal, teardown and authorization models; bounded model checking of 26 broken variants; delegation rule; custody closure | `python3 scout_smt.py` (needs `z3` on PATH; 4.15.4 used) |
-| `obligations/` | The 41 generated SMT-LIB 2 proof obligations; each must be `unsat` | `z3 obligations/<file>.smt2` or any SMT-LIB solver |
-| `results.txt` | Output of `scout_smt.py` | |
-| `export.py`, `lean/` | The same six models exported to Lean 4: 63 theorems (41 invariant obligations, 22 safety properties), checked by the Lean kernel | `python3 export.py --check-lean` (needs `lean`; 4.36.0 used) |
-| `export.py`, `tla/` | The same six models and their 26 broken variants exported to TLA+: 32 modules, model-checked by TLC within finite bounds | `python3 export.py --check-tla /path/to/tla2tools.jar` (needs Java; TLA+ tools 1.8.0 used) |
-| `results-lean-tla.txt` | Output of the Lean and TLC run | |
-| `symbolic/gen.py` | Generates and runs eight ProVerif models of delivery, renewal and revocation (three SCOUT scenarios, three broken variants, two baselines) and checks each result against its expected value | `python3 symbolic/gen.py` (needs `proverif`; 2.05 used) |
-| `symbolic/gen_assertion.py` | Six two-phase ProVerif models: broker compromise at renewal, and assertion-mediated renewal with shared or per-grant client identity | `python3 symbolic/gen_assertion.py` |
-| `symbolic/*.pv`, `*.log`, `results*.txt` | Generated models, full ProVerif output, summary | |
-| `bounded/model_check.py` | Exhaustive breadth-first exploration of three finite abstractions with nine negative controls | `python3 bounded/model_check.py --output-dir bounded` |
-| `bounded/wire_codec.py`, `test_wire_codec.py`, `wire-vectors.json`, `wire-format.md` | Reference encoder and checker for a typed wire profile, 26 tests | `cd bounded && python3 -m unittest test_wire_codec` (needs the `cryptography` package) |
+This repository contains the paper, a reference implementation in Rust with a Helm chart, and machine-checked proofs of the protocol in five tools.
 
-Every script exits 0 only if all proofs pass and every broken variant is caught.
-These are proofs about models of the protocol, not about an implementation; see Section 7.5 of the paper.
+![Roles and credential custody](docs/img/custody.svg)
 
-## Run everything
+## What is here
+
+| Path | Contents |
+|---|---|
+| [`paper/`](paper/) | The paper (PDF and LaTeX source) |
+| [`impl/`](impl/) | Reference implementation in Rust: broker, runner CLI, mock OAuth provider, tests, Dockerfile, Docker Compose demo |
+| [`deploy/helm/scout/`](deploy/helm/scout/) | Helm chart with an example Job |
+| [`proofs/`](proofs/) | Formal models and proofs: Z3, Lean 4, TLA+, ProVerif |
+| [`docs/img/`](docs/img/) | Diagrams (SVG, and the editable Excalidraw source of the topology) |
+
+## How renewal works
+
+Providers that rotate refresh tokens invalidate the presented token when it is used. If the reply carrying the replacement is lost, the credential is gone. SCOUT reserves a renewal generation for one operation, calls the provider once, and stores the runner-sealed reply together with the next commitment in a single conditional write. A retry gets the identical ciphertext without a second provider call, although the broker cannot read what it replays. A keyed commitment, checked before the client secret is used, stops the broker from refreshing a token that was issued under someone else's approval.
+
+![Renewal with reservation and replay](docs/img/renewal.svg)
+
+## Try it
+
+With Docker:
 
 ```sh
-python3 scout_smt.py                         # Z3: 41 induction obligations, 26 broken variants
-python3 export.py --check-lean --check-tla tla2tools.jar   # Lean 4: 63 theorems; TLC: 32 modules
-python3 symbolic/gen.py                      # ProVerif: 8 scenarios
-python3 symbolic/gen_assertion.py            # ProVerif: 6 two-phase scenarios
-python3 bounded/model_check.py --output-dir bounded
-(cd bounded && python3 -m unittest test_wire_codec)
+cd impl
+docker compose up --build --abort-on-container-exit --exit-code-from runner
 ```
+
+This starts a mock OAuth provider, the broker and a runner. The runner completes a session, runs a small workload that calls the provider's API, renews its access token several times, then revokes and finalizes.
+
+Without Docker, see the three commands in [`impl/README.md`](impl/README.md).
+
+## Deploy the example on Kubernetes
+
+```sh
+docker build -t scout:dev impl
+kind create cluster --name scout-demo
+kind load docker-image scout:dev --name scout-demo
+helm install demo deploy/helm/scout
+kubectl wait --for=condition=complete job/demo-scout-example --timeout=180s
+kubectl logs job/demo-scout-example
+```
+
+![Example Kubernetes topology](docs/img/kubernetes-topology.svg)
+
+The chart runs one broker replica with a small volume for its store, a mock provider, an example runner Job, and a NetworkPolicy that lets only the broker reach the provider's token endpoint. The secrets it generates are for the demo; use an existing Secret for anything else.
+
+## What is proved, and by what
+
+Every property is paired with a deliberately broken variant that the tool must reject.
+
+| Tool | What it checks | Scope |
+|---|---|---|
+| Z3 | 41 inductive-invariant obligations over six models (session, delivery, renewal, assertion-mediated renewal, teardown, authorization epoch); 26 broken variants | Unbounded generations, retries and crashes |
+| Lean 4 | The same obligations as 63 theorems accepted by the Lean kernel | Unbounded |
+| TLA+ / TLC | The same six models and their 26 broken variants | Exhaustive within finite bounds |
+| ProVerif | Token secrecy, lineage binding, revocation scope, broker compromise, assertion-mediated renewal, supervised delegation: 17 scenarios | Active network attacker, unbounded sessions |
+| Kani | The Rust protocol core itself: 14 proof harnesses for the session, delivery, renewal and teardown properties; 4 broken variants | The real code in `impl/scout-core`, any number of steps |
+
+The Rust tests add an exhaustive search of the real renewal code against the model, and end-to-end tests for lost replies, competing operations, ambiguous provider outcomes, foreign tokens, storage snapshots and closure.
+
+These are proofs about models and about the protocol core. They do not cover the HTTP and storage shell around the core, the cryptographic primitives, or a provider's behaviour. The paper states the assumptions and limits in full.
+
+Run everything:
+
+```sh
+python3 proofs/scout_smt.py
+python3 proofs/export.py --check-lean --check-tla /path/to/tla2tools.jar
+python3 proofs/symbolic/gen.py && python3 proofs/symbolic/gen_assertion.py && python3 proofs/symbolic/gen_delegation.py
+cd impl && cargo test --workspace && cd scout-core && cargo kani
+```
+
+The same checks run in CI on every push.
+
+## Status and limits
+
+This is a reference implementation, not a production service: one broker replica with a file-backed store, no TLS in the server itself, and a mock provider. Assertion-mediated renewal and the delegation supervisor are specified and proved in the models but not implemented. See [`impl/README.md`](impl/README.md).
 
 ## How to cite
 
-This work may be used for any purpose under CC BY 4.0. If you use it, cite the paper:
+If you use this work, cite the paper:
 
 > Algimantas Krasauskas. *SCOUT: Split-Custody, Session-Bound Credential Renewal for Human-Authorized AI Agents*. November 2026.
 
@@ -42,4 +93,4 @@ GitHub's "Cite this repository" button gives the same reference in BibTeX and AP
 
 ## Licence
 
-[Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0); see `LICENSE`. You may use, share and adapt this work for any purpose, provided you cite the paper.
+[Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0); see [`LICENSE`](LICENSE). You may use, share and adapt this work for any purpose, provided you cite the paper.

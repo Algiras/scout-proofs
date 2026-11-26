@@ -1,0 +1,86 @@
+# SPDX-License-Identifier: CC-BY-4.0
+{{- if .Values.mockProvider.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "scout.fullname" . }}-mockprovider
+  labels: {{- include "scout.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mockprovider
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "scout.labels" . | nindent 6 }}
+      app.kubernetes.io/component: mockprovider
+  template:
+    metadata:
+      labels:
+        {{- include "scout.labels" . | nindent 8 }}
+        app.kubernetes.io/component: mockprovider
+    spec:
+      {{- include "scout.podSecurity" . | nindent 6 }}
+      containers:
+        - name: mockprovider
+          image: {{ include "scout.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- include "scout.containerSecurity" . | nindent 10 }}
+          command: ["/usr/local/bin/mockprovider"]
+          args:
+            - --listen=0.0.0.0:{{ .Values.mockProvider.frontPort }}
+            - --backchannel-listen=0.0.0.0:{{ .Values.mockProvider.backPort }}
+            - --client-id={{ .Values.provider.clientId }}
+            - --auto-approve={{ .Values.mockProvider.autoApprove }}
+            - --access-ttl={{ .Values.mockProvider.accessTtlSeconds }}
+          env:
+            - { name: SCOUT_CLIENT_SECRET, valueFrom: { secretKeyRef: { name: {{ include "scout.secretName" . }}, key: client-secret } } }
+          ports:
+            - { name: front, containerPort: {{ .Values.mockProvider.frontPort }} }
+            - { name: back, containerPort: {{ .Values.mockProvider.backPort }} }
+          readinessProbe:
+            httpGet: { path: /healthz, port: front }
+            periodSeconds: 3
+          resources: {{- toYaml .Values.mockProvider.resources | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "scout.fullname" . }}-mockprovider
+  labels: {{- include "scout.labels" . | nindent 4 }}
+spec:
+  selector:
+    {{- include "scout.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mockprovider
+  ports:
+    - { name: front, port: {{ .Values.mockProvider.frontPort }}, targetPort: front }
+    - { name: back, port: {{ .Values.mockProvider.backPort }}, targetPort: back }
+{{- if .Values.networkPolicy.enabled }}
+---
+# Token and revocation (back port): broker only. Browser and resource routes (front port): broker and runner.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "scout.fullname" . }}-mockprovider
+  labels: {{- include "scout.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "scout.labels" . | nindent 6 }}
+      app.kubernetes.io/component: mockprovider
+  policyTypes: ["Ingress"]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              {{- include "scout.labels" . | nindent 14 }}
+              app.kubernetes.io/component: broker
+      ports:
+        - { protocol: TCP, port: {{ .Values.mockProvider.backPort }} }
+    - from:
+        - podSelector:
+            matchExpressions:
+              - { key: app.kubernetes.io/instance, operator: In, values: [{{ .Release.Name | quote }}] }
+              - { key: app.kubernetes.io/component, operator: In, values: [broker, runner] }
+      ports:
+        - { protocol: TCP, port: {{ .Values.mockProvider.frontPort }} }
+{{- end }}
+{{- end }}

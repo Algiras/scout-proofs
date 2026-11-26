@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -60 1280 680" width="2560" height="1360">
+<rect x="-20" y="-60" width="1280" height="680" fill="#ffffff"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="20px" fill="#1e1e1e" style="white-space: pre"><text x="337.74" y="-3.10" text-anchor="start">CREDENTIAL CUSTODY DURING AN EXECUTION SESSION</text></g>
+<rect x="20" y="40" width="280" height="90" rx="22.5" fill="#f1f3f5" stroke="#495057" stroke-width="1.5"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="19px" fill="#1e1e1e" style="white-space: pre"><text x="105.09" y="77.31" text-anchor="start">Principal</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="17px" fill="#1e1e1e" style="white-space: pre"><text x="55.12" y="99.36" text-anchor="start">Approves requested access</text></g>
+<rect x="920" y="40" width="300" height="90" rx="22.5" fill="#f1f3f5" stroke="#495057" stroke-width="1.5"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="19px" fill="#1e1e1e" style="white-space: pre"><text x="1007.69" y="77.31" text-anchor="start">Requester</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="17px" fill="#1e1e1e" style="white-space: pre"><text x="957.57" y="99.36" text-anchor="start">Declares task and capabilities</text></g>
+<rect x="480" y="240" width="360" height="110" rx="27.5" fill="#f1f3f5" stroke="#495057" stroke-width="1.5"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="19px" fill="#1e1e1e" style="white-space: pre"><text x="613.54" y="276.06" text-anchor="start">Broker</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="17px" fill="#1e1e1e" style="white-space: pre"><text x="553.70" y="298.12" text-anchor="start">Retains client authentication</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="17px" fill="#1e1e1e" style="white-space: pre"><text x="550.88" y="319.37" text-anchor="start">Holds user tokens transiently</text></g>
+<rect x="960" y="240" width="260" height="110" rx="27.5" fill="#f1f3f5" stroke="#495057" stroke-width="1.5"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="19px" fill="#1e1e1e" style="white-space: pre"><text x="1036.14" y="276.06" text-anchor="start">Provider</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="17px" fill="#1e1e1e" style="white-space: pre"><text x="1008.74" y="298.12" text-anchor="start">Issues, refreshes and</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="17px" fill="#1e1e1e" style="white-space: pre"><text x="1032.84" y="319.37" text-anchor="start">revokes tokens</text></g>
+<rect x="20" y="230" width="300" height="130" rx="32" fill="#f1f3f5" stroke="#495057" stroke-width="1.5"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="19px" fill="#1e1e1e" style="white-space: pre"><text x="120.36" y="264.81" text-anchor="start">Runner</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="17px" fill="#1e1e1e" style="white-space: pre"><text x="93.94" y="286.87" text-anchor="start">Generates key pairs</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="17px" fill="#1e1e1e" style="white-space: pre"><text x="76.93" y="308.12" text-anchor="start">Retains private keys and</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="17px" fill="#1e1e1e" style="white-space: pre"><text x="71.27" y="329.37" text-anchor="start">decrypted refresh material</text></g>
+<rect x="500" y="480" width="320" height="100" rx="25" fill="#f1f3f5" stroke="#495057" stroke-width="1.5"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="19px" fill="#1e1e1e" style="white-space: pre"><text x="618.81" y="511.06" text-anchor="start">Store</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="17px" fill="#1e1e1e" style="white-space: pre"><text x="557.96" y="533.12" text-anchor="start">Runner-sealed user tokens</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="17px" fill="#1e1e1e" style="white-space: pre"><text x="555.60" y="554.37" text-anchor="start">No broker-decryptable copy</text></g>
+<rect x="20" y="480" width="300" height="80" rx="20" fill="#f1f3f5" stroke="#495057" stroke-width="1.5"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="19px" fill="#1e1e1e" style="white-space: pre"><text x="111.39" y="512.30" text-anchor="start">Workload</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="17px" fill="#1e1e1e" style="white-space: pre"><text x="67.97" y="534.37" text-anchor="start">Uses access-token surface</text></g>
+<path d="M300.00 85.00 L600.00 85.00 L600.00 240.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M608.55 216.51 L600.00 240.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M591.45 216.51 L600.00 240.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="16px" fill="#1e1e1e" style="white-space: pre"><text x="330.00" y="73.52" text-anchor="start">Approval</text></g>
+<path d="M920.00 85.00 L720.00 85.00 L720.00 240.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M728.55 216.51 L720.00 240.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M711.45 216.51 L720.00 240.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="16px" fill="#1e1e1e" style="white-space: pre"><text x="752.00" y="73.52" text-anchor="start">Task request</text></g>
+<path d="M320.00 272.00 L480.00 272.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M456.51 263.45 L480.00 272.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M456.51 280.55 L480.00 272.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="16px" fill="#1e1e1e" style="white-space: pre"><text x="357.32" y="241.52" text-anchor="start">Public keys,</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="16px" fill="#1e1e1e" style="white-space: pre"><text x="343.53" y="261.52" text-anchor="start">signed requests</text></g>
+<path d="M480.00 322.00 L320.00 322.00" fill="none" stroke="#343a40" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="8 10"/><path d="M343.49 330.55 L320.00 322.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M343.49 313.45 L320.00 322.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="16px" fill="#1e1e1e" style="white-space: pre"><text x="335.07" y="343.52" text-anchor="start">Sealed grants and</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="16px" fill="#1e1e1e" style="white-space: pre"><text x="351.98" y="363.52" text-anchor="start">replacements</text></g>
+<path d="M840.00 272.00 L960.00 272.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M936.51 263.45 L960.00 272.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M936.51 280.55 L960.00 272.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="16px" fill="#1e1e1e" style="white-space: pre"><text x="871.99" y="241.52" text-anchor="start">Refresh</text></g>
+<g font-family="Helvetica, Arial, sans-serif" font-size="16px" fill="#1e1e1e" style="white-space: pre"><text x="865.31" y="261.52" text-anchor="start">exchange</text></g>
+<path d="M960.00 322.00 L840.00 322.00" fill="none" stroke="#343a40" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="8 10"/><path d="M863.49 330.55 L840.00 322.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M863.49 313.45 L840.00 322.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="16px" fill="#1e1e1e" style="white-space: pre"><text x="873.77" y="343.52" text-anchor="start">Tokens</text></g>
+<path d="M660.00 350.00 L660.00 480.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M668.55 456.51 L660.00 480.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M651.45 456.51 L660.00 480.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="16px" fill="#1e1e1e" style="white-space: pre"><text x="672.00" y="416.52" text-anchor="start">Seal and store</text></g>
+<path d="M170.00 360.00 L170.00 480.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M178.55 456.51 L170.00 480.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M161.45 456.51 L170.00 480.00" fill="none" stroke="#343a40" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<g font-family="Helvetica, Arial, sans-serif" font-size="16px" fill="#1e1e1e" style="white-space: pre"><text x="182.00" y="421.52" text-anchor="start">Access token</text></g>
+</svg>

@@ -1,0 +1,17 @@
+
+d_supervised_delegation: supervisor checks the exact tuple; the child is attacker-controlled
+  PROVED     D1 the provider executes under the root credential only tuples the principal approved
+  PROVED     D2 the root credential stays secret from the child
+  REACHABLE  sanity: a child operation is served
+
+d_x_no_tuple_check: broken: supervisor injects the credential for whatever the child proposes
+  ATTACK     D1 the provider executes under the root credential only tuples the principal approved
+  PROVED     D2 the root credential stays secret from the child
+  REACHABLE  sanity: a child operation is served
+
+d_x_child_holds_token: baseline: the child is handed the root credential
+  ATTACK     D1 the provider executes under the root credential only tuples the principal approved
+  ATTACK     D2 the root credential stays secret from the child
+  REACHABLE  sanity: a child operation is served
+
+RESULT: all scenarios as expected
