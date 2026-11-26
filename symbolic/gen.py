@@ -42,7 +42,7 @@ reduc forall m: bitstring, k: sskey; getmsg(sign(m, k)) = m.
 fun hmac(bitstring, key): bitstring.
 fun h(bitstring): bitstring.
 
-const exch, refr, fetchTag, renewTag, tagAT, tagRT, zero, one: bitstring.
+const exch, refr, revk, fetchTag, renewTag, revokeTag, tagAT, tagRT, zero, one: bitstring.
 
 (* ---------- provider state ---------- *)
 table tok(bitstring, bitstring, bool).   (* initial refresh token, grant, grant approved by the honest principal *)
@@ -54,12 +54,16 @@ event Committed(bitstring, bitstring).      (* broker bound this refresh token t
 event BrokerRefresh(bitstring, bitstring).  (* broker used the client credential for (session, token) *)
 event RunnerHolds(bitstring, bitstring).    (* honest runner accepted a refresh token for its session *)
 event RunnerRenewed(bitstring, bitstring).  (* honest runner completed a renewal *)
+event Delivered(bitstring, bitstring).      (* broker sealed this access token in a grant of this session *)
+event BrokerRevoke(bitstring, bitstring).   (* broker used the client credential to revoke (session, token) *)
 
 (* Q1 *) query x: bitstring; event(HonestToken(x)) && attacker(x) ==> false.
 (* Q2 *) query s: bitstring, t: bitstring; event(BrokerRefresh(s, t)) ==> event(Committed(s, t)).
 (* Q3 *) query s: bitstring, t: bitstring; event(RunnerHolds(s, t)) ==> event(Committed(s, t)).
 (* Q4 *) query x: bitstring; event(HonestNew(x)) && attacker(x) ==> false.
+(* Q5 *) query s: bitstring, t: bitstring; event(BrokerRevoke(s, t)) ==> event(Delivered(s, t)).
 (* R  *) query s: bitstring, t: bitstring; event(RunnerRenewed(s, t)).
+(* R2 *) query s: bitstring, t: bitstring; event(BrokerRevoke(s, t)).
 
 let Provider(cs: bitstring) =
   ( ! in(bp, (=exch, =cs, hon: bool, rc: channel));
@@ -74,6 +78,7 @@ let Provider(cs: bitstring) =
       if hon = true then (event HonestToken(at2); event HonestToken(rt2);
                           event HonestNew(at2); event HonestNew(rt2); out(rc, (at2, rt2)))
       else out(rc, (at2, rt2)) )
+  | ( ! in(bp, (=revk, =cs, tk: bitstring, rc: channel)); out(rc, tk) )   (* revocation endpoint *)
   | (* public token endpoint: anyone who has the client credential and a refresh token *)
     ( ! in(net, (=refr, =cs, rtp: bitstring));
       get tok(=rtp, g, hon) in
@@ -118,7 +123,16 @@ let Session(skB: skey, cs: bitstring, kc: key, kstore: key, sid: bitstring, ss: 
   let cm2 = hmac((g, one, rt2), kc) in
   event Committed(sid, rt2);
   out(net, (gid2, ctA2, ctR2, cm2 @VAULT1@));              (* stored: sealed reply and next commitment *)
-  out(net, senc((gid2, ctA2, ctR2), k3)).
+  let dd2 = hmac((sid, at2), kc) in                        (* keyed digest of the delivered token *)
+  event Delivered(sid, at2);
+  out(net, senc((gid2, ctA2, ctR2), k3));
+  (* cooperative teardown: revoke a token the runner submits *)
+  in(net, m4: bitstring);
+  let ((=sid, tk: bitstring, sg4: bitstring), k4: key) = tdec(m4, skB) in
+  if checksign(sg4, vk) = (revokeTag, sid, h(tk)) then
+  @DELIVEREDCHECK@
+  event BrokerRevoke(sid, tk);
+  new rc3: channel; out(bp, (revk, cs, tk, rc3)).
 
 let Broker(skB: skey, cs: bitstring, kc: key, kstore: key) =
   ( ! new sid: bitstring; new ss: bitstring;               (* session for the honest principal *)
@@ -150,7 +164,9 @@ let Runner(pkB: pkey) =
     let at2 = unseal(ctA2, skE, (sid, gid2, tagAT, one)) in
     let rt2 = unseal(ctR2, skE, (sid, gid2, tagRT, one)) in
     event RunnerHolds(sid, rt2);
-    event RunnerRenewed(sid, rt2).
+    event RunnerRenewed(sid, rt2);
+    new k4: key;
+    out(net, tenc(((sid, at2, sign((revokeTag, sid, h(at2)), skS)), k4), pkB)).
 
 process
   new skB: skey; new cs: bitstring; new kc: key; new kstore: key;
@@ -164,6 +180,7 @@ BASE = {
     "CONSENT": "in(if hon = true then cons else net, =sid);",
     "COMMITCHECK": "if hmac((g, zero, rtp), kc) = cm then",
     "VAULT0": "", "VAULT1": "",
+    "DELIVEREDCHECK": "if hmac((sid, tk), kc) = dd2 then",
     "LEAKRT": "", "LEAKS": "",
 }
 LEAK_AT_REST = "out(net, cs); out(net, kc); out(net, kstore);"
@@ -174,31 +191,35 @@ LEAK_CS = "out(net, cs);"
 SCENARIOS = {
     "scout_snapshot": (
         "SCOUT; attacker has the network and a storage snapshot",
-        {}, (True, True, True, True)),
+        {}, (True, True, True, True, True)),
     "scout_snapshot_and_broker_secrets": (
         "SCOUT; attacker also has the broker's secrets at rest (client credential, commitment key, storage key)",
-        {"LEAKS": LEAK_AT_REST}, (True, True, True, True)),
+        {"LEAKS": LEAK_AT_REST}, (True, True, True, True, True)),
     "scout_stolen_refresh_token": (
         "SCOUT; a refresh token of the honest session is stolen",
-        {"LEAKRT": "out(net, rt);"}, (None, True, True, True)),
+        {"LEAKRT": "out(net, rt);"}, (None, True, True, True, True)),
     "x_no_commitment_check_stolen_token": (
         "broken: no commitment check; a refresh token is stolen",
-        {"LEAKRT": "out(net, rt);", "COMMITCHECK": ""}, (None, False, True, False)),
+        {"LEAKRT": "out(net, rt);", "COMMITCHECK": ""}, (None, False, True, False, True)),
     "x_bind_without_session_secret": (
         "broken: binding does not require the session secret",
-        {"BINDSECRET": "ssx: bitstring"}, (False, True, True, False)),
+        {"BINDSECRET": "ssx: bitstring"}, (False, True, True, False, True)),
     "x_vault_decryptable_at_rest": (
         "baseline: broker also stores tokens under its own storage key (token vault); secrets at rest leak",
         {"LEAKS": LEAK_AT_REST, "VAULT0": ", senc(rt, kstore)", "VAULT1": ", senc(rt2, kstore)"},
-        (False, True, True, False)),
+        (False, True, True, False, True)),
     "x_runner_holds_client_credential_stolen_token": (
         "baseline: the client credential lives in the execution environment and leaks with a stolen token",
-        {"LEAKRT": "out(net, rt);", "LEAKS": LEAK_CS}, (None, True, True, False)),
+        {"LEAKRT": "out(net, rt);", "LEAKS": LEAK_CS}, (None, True, True, False, True)),
+    "x_revoke_without_delivered_check": (
+        "broken: teardown revokes any token the runner submits",
+        {"DELIVEREDCHECK": ""}, (True, True, True, True, False)),
 }
 QNAMES = ["Q1 tokens of honest grants stay secret",
           "Q2 client credential used only for a token committed to that session",
           "Q3 runner accepts only tokens the broker sealed for its session",
-          "Q4 tokens minted by refreshing an honest grant stay secret"]
+          "Q4 tokens minted by refreshing an honest grant stay secret",
+          "Q5 client credential revokes only a token delivered in that session"]
 
 
 def build(over):
@@ -251,9 +272,9 @@ def main():
             f.write(text)
         res = re.findall(r"^RESULT (.*?) (is true|is false|cannot be proved)\.", text, flags=re.M)
         print(f"\n{name}: {desc}")
-        if len(res) != 5:
+        if len(res) != 7:
             ok = False
-            print("  ERROR: expected 5 results, got", len(res), "\n", text[-600:])
+            print("  ERROR: expected 7 results, got", len(res), "\n", text[-600:])
             continue
         for i, exp in enumerate(expect):
             got = res[i][1]
@@ -264,9 +285,10 @@ def main():
             ok &= good
             verdict = "PROVED" if got == "is true" else ("ATTACK" if got == "is false" else "NOT PROVED")
             print(f"  {verdict:10} {QNAMES[i]}{'' if good else '   <-- UNEXPECTED'}")
-        reach = res[4][1] == "is false"   # 'not event(...)' false  =>  the event is reachable
-        ok &= reach
-        print(f"  {'REACHABLE' if reach else 'UNREACHABLE':10} sanity: an honest runner completes a renewal")
+        for idx, what in ((5, "an honest runner completes a renewal"), (6, "a revocation reaches the provider")):
+            reach = res[idx][1] == "is false"   # 'not event(...)' false  =>  the event is reachable
+            ok &= reach
+            print(f"  {'REACHABLE' if reach else 'UNREACHABLE':10} sanity: {what}")
     print("\nRESULT:", "all scenarios as expected" if ok else "MISMATCH")
     return 0 if ok else 1
 

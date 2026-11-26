@@ -4,48 +4,71 @@ scout_snapshot: SCOUT; attacker has the network and a storage snapshot
   PROVED     Q2 client credential used only for a token committed to that session
   PROVED     Q3 runner accepts only tokens the broker sealed for its session
   PROVED     Q4 tokens minted by refreshing an honest grant stay secret
+  PROVED     Q5 client credential revokes only a token delivered in that session
   REACHABLE  sanity: an honest runner completes a renewal
+  REACHABLE  sanity: a revocation reaches the provider
 
 scout_snapshot_and_broker_secrets: SCOUT; attacker also has the broker's secrets at rest (client credential, commitment key, storage key)
   PROVED     Q1 tokens of honest grants stay secret
   PROVED     Q2 client credential used only for a token committed to that session
   PROVED     Q3 runner accepts only tokens the broker sealed for its session
   PROVED     Q4 tokens minted by refreshing an honest grant stay secret
+  PROVED     Q5 client credential revokes only a token delivered in that session
   REACHABLE  sanity: an honest runner completes a renewal
+  REACHABLE  sanity: a revocation reaches the provider
 
 scout_stolen_refresh_token: SCOUT; a refresh token of the honest session is stolen
   n/a        Q1 tokens of honest grants stay secret
   PROVED     Q2 client credential used only for a token committed to that session
   PROVED     Q3 runner accepts only tokens the broker sealed for its session
   PROVED     Q4 tokens minted by refreshing an honest grant stay secret
+  PROVED     Q5 client credential revokes only a token delivered in that session
   REACHABLE  sanity: an honest runner completes a renewal
+  REACHABLE  sanity: a revocation reaches the provider
 
 x_no_commitment_check_stolen_token: broken: no commitment check; a refresh token is stolen
   n/a        Q1 tokens of honest grants stay secret
   ATTACK     Q2 client credential used only for a token committed to that session
   PROVED     Q3 runner accepts only tokens the broker sealed for its session
   ATTACK     Q4 tokens minted by refreshing an honest grant stay secret
+  PROVED     Q5 client credential revokes only a token delivered in that session
   REACHABLE  sanity: an honest runner completes a renewal
+  REACHABLE  sanity: a revocation reaches the provider
 
 x_bind_without_session_secret: broken: binding does not require the session secret
   ATTACK     Q1 tokens of honest grants stay secret
   PROVED     Q2 client credential used only for a token committed to that session
   PROVED     Q3 runner accepts only tokens the broker sealed for its session
   ATTACK     Q4 tokens minted by refreshing an honest grant stay secret
+  PROVED     Q5 client credential revokes only a token delivered in that session
   REACHABLE  sanity: an honest runner completes a renewal
+  REACHABLE  sanity: a revocation reaches the provider
 
 x_vault_decryptable_at_rest: baseline: broker also stores tokens under its own storage key (token vault); secrets at rest leak
   ATTACK     Q1 tokens of honest grants stay secret
   PROVED     Q2 client credential used only for a token committed to that session
   PROVED     Q3 runner accepts only tokens the broker sealed for its session
   ATTACK     Q4 tokens minted by refreshing an honest grant stay secret
+  PROVED     Q5 client credential revokes only a token delivered in that session
   REACHABLE  sanity: an honest runner completes a renewal
+  REACHABLE  sanity: a revocation reaches the provider
 
 x_runner_holds_client_credential_stolen_token: baseline: the client credential lives in the execution environment and leaks with a stolen token
   n/a        Q1 tokens of honest grants stay secret
   PROVED     Q2 client credential used only for a token committed to that session
   PROVED     Q3 runner accepts only tokens the broker sealed for its session
   ATTACK     Q4 tokens minted by refreshing an honest grant stay secret
+  PROVED     Q5 client credential revokes only a token delivered in that session
   REACHABLE  sanity: an honest runner completes a renewal
+  REACHABLE  sanity: a revocation reaches the provider
+
+x_revoke_without_delivered_check: broken: teardown revokes any token the runner submits
+  PROVED     Q1 tokens of honest grants stay secret
+  PROVED     Q2 client credential used only for a token committed to that session
+  PROVED     Q3 runner accepts only tokens the broker sealed for its session
+  PROVED     Q4 tokens minted by refreshing an honest grant stay secret
+  ATTACK     Q5 client credential revokes only a token delivered in that session
+  REACHABLE  sanity: an honest runner completes a renewal
+  REACHABLE  sanity: a revocation reaches the provider
 
 RESULT: all scenarios as expected

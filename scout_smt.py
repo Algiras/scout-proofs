@@ -415,7 +415,118 @@ AUTHZ = {"id": "authorization", "title": "Authorization reservations against the
          "aux": ["(and (>= stage 0) (<= stage 2))", "(=> (>= stage 1) (<= resEpoch epoch))", "(not sawOpen)"],
          "trans": A_TRANS, "variants": A_VARIANTS}
 
-MODELS = [SESSION, DELIVERY, RENEWAL, AUTHZ]
+
+# --------------------------------------------------------------------------
+# Cooperative teardown and closure
+# resp: 1 provider acknowledged, 2 unsupported, 3 explicit failure, 4 no answer
+# --------------------------------------------------------------------------
+def revoke(guard, reported="(= resp 1)"):
+    return ({"d": "Bool", "resp": "Int"}, guard,
+            {"badForeign": "(or badForeign (not d))",
+             "badNoKey": "(or badNoKey (not keyPresent))",
+             "reportedRevoked": reported, "provAck": "(= resp 1)",
+             "badFalseAck": f"(or badFalseAck (and {reported} (not (= resp 1))))"})
+
+T_TRANS = {
+    # d: the submitted token is one delivered in a grant of this session (keyed digest recorded at sealing)
+    "Revoke": revoke("(and keyPresent d (>= resp 1) (<= resp 4))"),
+    # finalization, step 1: conditional close of the shared delivery-and-renewal record
+    "Close": ({}, "(not closed)", {"closed": "true", "saved": "false", "bindings": "false"}),
+    # finalization, step 2: delete session records and the pinned runner key
+    "Delete": ({}, "(and closed (not deleted))", {"deleted": "true", "keyPresent": "false"}),
+    "Deliver": ({}, "(not closed)", {"badAfterClose": "(or badAfterClose closed)"}),
+    "RenewAdmit": ({}, "(and (not closed) bindings)", {"badAfterClose": "(or badAfterClose closed)"}),
+    "RenewCommit": ({}, "(and (not closed) bindings)", {"saved": "true", "badAfterClose": "(or badAfterClose closed)"}),
+}
+T_VARIANTS = {}
+_t = copy.deepcopy(T_TRANS); _t["Revoke"] = revoke("(and keyPresent (>= resp 1) (<= resp 4))")
+T_VARIANTS["revoke_any_submitted_token"] = (_t, "T1 client credential revokes only tokens delivered in this session")
+_t = copy.deepcopy(T_TRANS); _t["Revoke"] = revoke("(and keyPresent d (>= resp 1) (<= resp 4))", "(not (= resp 2))")
+T_VARIANTS["error_or_timeout_reported_as_revoked"] = (_t, "T2 revoked is reported only on provider acknowledgement")
+_t = copy.deepcopy(T_TRANS); _t["RenewCommit"] = ({}, "bindings", {"saved": "true", "badAfterClose": "(or badAfterClose closed)"})
+_t["Close"] = ({}, "(not closed)", {"closed": "true", "saved": "false"})
+T_VARIANTS["renewal_completes_after_closure"] = (_t, "T3 no delivery, renewal admission or completion after closure")
+_t = copy.deepcopy(T_TRANS); _t["Delete"] = ({}, "(not deleted)", {"deleted": "true", "keyPresent": "false"})
+T_VARIANTS["delete_before_close"] = (_t, "T4 records and the runner key are deleted only after closure")
+_t = copy.deepcopy(T_TRANS); _t["Close"] = ({}, "(not closed)", {"closed": "true"})
+T_VARIANTS["closure_keeps_ciphertext"] = (_t, "T5 closure leaves no bindings or saved ciphertext")
+_t = copy.deepcopy(T_TRANS); _t["Revoke"] = revoke("(and d (>= resp 1) (<= resp 4))")
+_t["Delete"] = ({}, "(not deleted)", {"deleted": "true", "keyPresent": "false", "closed": "true", "saved": "false", "bindings": "false"})
+T_VARIANTS["revoke_after_key_deleted"] = (_t, "T6 revocation requests are verified against a retained runner key")
+
+TEARDOWN = {"id": "teardown", "title": "Cooperative teardown and closure",
+            "vars": {"closed": "Bool", "deleted": "Bool", "keyPresent": "Bool", "saved": "Bool", "bindings": "Bool",
+                     "reportedRevoked": "Bool", "provAck": "Bool", "badForeign": "Bool", "badFalseAck": "Bool",
+                     "badAfterClose": "Bool", "badNoKey": "Bool"},
+            "const": {},
+            "init": "(and (not closed) (not deleted) keyPresent (not saved) bindings (not reportedRevoked) (not provAck)"
+                    " (not badForeign) (not badFalseAck) (not badAfterClose) (not badNoKey))",
+            "safety": {"T1 client credential revokes only tokens delivered in this session": "(not badForeign)",
+                       "T2 revoked is reported only on provider acknowledgement":
+                           "(and (not badFalseAck) (=> reportedRevoked provAck))",
+                       "T3 no delivery, renewal admission or completion after closure": "(not badAfterClose)",
+                       "T4 records and the runner key are deleted only after closure":
+                           "(and (=> deleted closed) (=> (not deleted) keyPresent))",
+                       "T5 closure leaves no bindings or saved ciphertext": "(=> closed (and (not saved) (not bindings)))",
+                       "T6 revocation requests are verified against a retained runner key": "(not badNoKey)"},
+            "aux": [], "trans": T_TRANS, "variants": T_VARIANTS}
+
+# --------------------------------------------------------------------------
+# Assertion-mediated renewal (the broker never receives the refresh token)
+# --------------------------------------------------------------------------
+def m_reserve(guard):
+    return ({"op": "Int"}, guard,
+            {"reserved": "true", "resOp": "op", "expired": "false", "exchanged": "false",
+             "count0": "(+ count0 (ite (= gen g0) 1 0))",
+             "badIssue": "(or badIssue closed (not live) (not (= runnerDig commitDig)))"})
+
+M_TRANS = {
+    # validation, reservation and issuance of the one client assertion for this generation
+    "ReserveIssue": m_reserve("(and (not closed) live (not reserved) (= runnerDig commitDig))"),
+    # a matching retry within the assertion lifetime receives the same sealed assertion
+    "Retry": ({"op": "Int"}, "(and reserved (= op resOp) (not expired) (not closed))",
+              {"badLate": "(or badLate expired closed)"}),
+    "AssertionExpires": ({}, "reserved", {"expired": "true"}),
+    # the runner presents refresh token and assertion directly to the provider
+    "RunnerExchange": ({"newDig": "Int"}, "(and reserved (not expired) (not exchanged))",
+                       {"exchanged": "true", "runnerDig": "newDig"}),
+    # signed completion report; the broker cannot verify the reported digest
+    "Complete": ({"r": "Int"}, "(and reserved (not closed))",
+                 {"reserved": "false", "commitDig": "r", "gen": "(+ gen 1)"}),
+    "Close": ({}, "true", {"closed": "true"}),
+    "SessionEnds": ({}, "true", {"live": "false"}),
+}
+M_VARIANTS = {}
+_t = copy.deepcopy(M_TRANS)
+_t["Retry"] = ({"op": "Int"}, "(and reserved (= op resOp) (not expired) (not closed))",
+               {"count0": "(+ count0 (ite (= gen g0) 1 0))", "badLate": "(or badLate expired closed)"})
+M_VARIANTS["fresh_assertion_on_retry"] = (_t, "M1 at most one client assertion per generation")
+_t = copy.deepcopy(M_TRANS); _t["AssertionExpires"] = ({}, "reserved", {"expired": "true", "reserved": "false"})
+M_VARIANTS["reservation_released_when_assertion_expires"] = (_t, "M1 at most one client assertion per generation")
+_t = copy.deepcopy(M_TRANS); _t["ReserveIssue"] = m_reserve("(and (not closed) live (not reserved))")
+M_VARIANTS["issue_without_digest_check"] = (_t, "M2 assertions only for a live, open session whose committed digest matches the held token")
+_t = copy.deepcopy(M_TRANS); _t["ReserveIssue"] = m_reserve("(and live (not reserved) (= runnerDig commitDig))")
+M_VARIANTS["issue_after_closure"] = (_t, "M2 assertions only for a live, open session whose committed digest matches the held token")
+_t = copy.deepcopy(M_TRANS)
+_t["Retry"] = ({"op": "Int"}, "(and reserved (= op resOp) (not closed))", {"badLate": "(or badLate expired closed)"})
+M_VARIANTS["assertion_returned_after_expiry"] = (_t, "M3 no assertion is returned after expiry or closure")
+
+ASSERTION = {"id": "assertion", "title": "Assertion-mediated renewal (unbounded generations and operations)",
+             "vars": {"gen": "Int", "reserved": "Bool", "resOp": "Int", "expired": "Bool", "exchanged": "Bool",
+                      "closed": "Bool", "live": "Bool", "commitDig": "Int", "runnerDig": "Int",
+                      "count0": "Int", "badIssue": "Bool", "badLate": "Bool"},
+             "const": {"g0": "Int"},
+             "init": "(and (= gen 0) (not reserved) (not expired) (not exchanged) (not closed) live"
+                     " (= commitDig runnerDig) (= count0 0) (not badIssue) (not badLate) (>= g0 0))",
+             "safety": {"M1 at most one client assertion per generation": "(<= count0 1)",
+                        "M2 assertions only for a live, open session whose committed digest matches the held token": "(not badIssue)",
+                        "M3 no assertion is returned after expiry or closure": "(not badLate)"},
+             "aux": ["(>= gen 0)", "(>= g0 0)", "(=> (< gen g0) (= count0 0))",
+                     "(=> (= gen g0) (= count0 (ite reserved 1 0)))", "(=> (> gen g0) (<= count0 1))"],
+             "trans": M_TRANS, "variants": M_VARIANTS}
+
+MODELS = [SESSION, DELIVERY, RENEWAL, ASSERTION, TEARDOWN, AUTHZ]
+
 
 # --------------------------------------------------------------------------
 # Custody closure: what each attacker position can derive (perfect cryptography)

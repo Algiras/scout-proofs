@@ -1,0 +1,1810 @@
+File "p_transient_broker_compromised_at_renewal.pv", line 128, characters 13-15:
+Warning: identifier sid rebound.
+File "p_transient_broker_compromised_at_renewal.pv", line 125, characters 11-13:
+Warning: identifier sid rebound.
+File "p_transient_broker_compromised_at_renewal.pv", line 132, characters 31-33:
+Warning: identifier sid rebound.
+File "p_transient_broker_compromised_at_renewal.pv", line 135, characters 15-17:
+Warning: identifier sid rebound.
+Process 0 (that is, the initial process):
+{1}new skB: skey;
+{2}new skP: skey;
+{3}new cs: bitstring;
+{4}new kc: key;
+{5}new skC: sskey;
+{6}out(net, pk(skB));
+{7}out(net, pk(skP));
+(
+    {8}let cs_1: bitstring = cs in
+    {9}let skP_1: skey = skP in
+    (
+        {10}!
+        {11}in(bp, (=exch,=cs_1,hon: bool,cvk: spkey,rc: channel));
+        {12}new at: bitstring;
+        {13}new rt: bitstring;
+        {14}new g: bitstring;
+        {15}insert tok(rt,g,hon,cvk);
+        {16}if (hon = true) then
+            {17}event HonestToken(at);
+            {18}event HonestToken(rt);
+            {19}out(rc, (at,rt,g))
+        else
+            {20}out(rc, (at,rt,g))
+    ) | (
+        {21}!
+        {22}in(bp, (=refr,=cs_1,rtp: bitstring,rc_1: channel));
+        {33}get tok(=rtp,g_1: bitstring,hon_1: bool,cvk_1: spkey) in
+        {23}new at2: bitstring;
+        {24}new rt2: bitstring;
+        {25}insert tok2(rt2,g_1,hon_1);
+        {26}if (hon_1 = true) then
+            {27}event HonestToken(at2);
+            {28}event HonestToken(rt2);
+            {29}event HonestNew(at2);
+            {30}event HonestNew(rt2);
+            {31}out(rc_1, (at2,rt2))
+        else
+            {32}out(rc_1, (at2,rt2))
+    ) | (
+        {34}!
+        {35}in(net, (=refr,=cs_1,rtp_1: bitstring));
+        {46}get tok(=rtp_1,g_2: bitstring,hon_2: bool,cvk_2: spkey) in
+        {36}new at2_1: bitstring;
+        {37}new rt2_1: bitstring;
+        {38}insert tok2(rt2_1,g_2,hon_2);
+        {39}if (hon_2 = true) then
+            {40}event HonestToken(at2_1);
+            {41}event HonestToken(rt2_1);
+            {42}event HonestNew(at2_1);
+            {43}event HonestNew(rt2_1);
+            {44}out(net, (at2_1,rt2_1))
+        else
+            {45}out(net, (at2_1,rt2_1))
+    ) | (
+        {47}!
+        {48}in(net, m: bitstring);
+        {49}let ((rtp_2: bitstring,asrt: bitstring),k: key) = tdec(m,skP_1) in
+        {61}get tok(=rtp_2,g_3: bitstring,hon_3: bool,cvk_3: spkey) in
+        {50}let (=assertTag,jti: bitstring) = checksign(asrt,cvk_3) in
+        {51}new at2_2: bitstring;
+        {52}new rt2_2: bitstring;
+        {53}insert tok2(rt2_2,g_3,hon_3);
+        {54}if (hon_3 = true) then
+            {55}event HonestToken(at2_2);
+            {56}event HonestToken(rt2_2);
+            {57}event HonestNew(at2_2);
+            {58}event HonestNew(rt2_2);
+            {59}out(net, senc((at2_2,rt2_2),k))
+        else
+            {60}out(net, senc((at2_2,rt2_2),k))
+    )
+) | (
+    {62}phase 1;
+    {63}let cs_2: bitstring = cs in
+    {64}let skP_2: skey = skP in
+    (
+        {65}!
+        {66}in(bp, (=exch,=cs_2,hon_4: bool,cvk_4: spkey,rc_2: channel));
+        {67}new at_1: bitstring;
+        {68}new rt_1: bitstring;
+        {69}new g_4: bitstring;
+        {70}insert tok(rt_1,g_4,hon_4,cvk_4);
+        {71}if (hon_4 = true) then
+            {72}event HonestToken(at_1);
+            {73}event HonestToken(rt_1);
+            {74}out(rc_2, (at_1,rt_1,g_4))
+        else
+            {75}out(rc_2, (at_1,rt_1,g_4))
+    ) | (
+        {76}!
+        {77}in(bp, (=refr,=cs_2,rtp_3: bitstring,rc_3: channel));
+        {88}get tok(=rtp_3,g_5: bitstring,hon_5: bool,cvk_5: spkey) in
+        {78}new at2_3: bitstring;
+        {79}new rt2_3: bitstring;
+        {80}insert tok2(rt2_3,g_5,hon_5);
+        {81}if (hon_5 = true) then
+            {82}event HonestToken(at2_3);
+            {83}event HonestToken(rt2_3);
+            {84}event HonestNew(at2_3);
+            {85}event HonestNew(rt2_3);
+            {86}out(rc_3, (at2_3,rt2_3))
+        else
+            {87}out(rc_3, (at2_3,rt2_3))
+    ) | (
+        {89}!
+        {90}in(net, (=refr,=cs_2,rtp_4: bitstring));
+        {101}get tok(=rtp_4,g_6: bitstring,hon_6: bool,cvk_6: spkey) in
+        {91}new at2_4: bitstring;
+        {92}new rt2_4: bitstring;
+        {93}insert tok2(rt2_4,g_6,hon_6);
+        {94}if (hon_6 = true) then
+            {95}event HonestToken(at2_4);
+            {96}event HonestToken(rt2_4);
+            {97}event HonestNew(at2_4);
+            {98}event HonestNew(rt2_4);
+            {99}out(net, (at2_4,rt2_4))
+        else
+            {100}out(net, (at2_4,rt2_4))
+    ) | (
+        {102}!
+        {103}in(net, m_1: bitstring);
+        {104}let ((rtp_5: bitstring,asrt_1: bitstring),k_1: key) = tdec(m_1,skP_2) in
+        {116}get tok(=rtp_5,g_7: bitstring,hon_7: bool,cvk_7: spkey) in
+        {105}let (=assertTag,jti_1: bitstring) = checksign(asrt_1,cvk_7) in
+        {106}new at2_5: bitstring;
+        {107}new rt2_5: bitstring;
+        {108}insert tok2(rt2_5,g_7,hon_7);
+        {109}if (hon_7 = true) then
+            {110}event HonestToken(at2_5);
+            {111}event HonestToken(rt2_5);
+            {112}event HonestNew(at2_5);
+            {113}event HonestNew(rt2_5);
+            {114}out(net, senc((at2_5,rt2_5),k_1))
+        else
+            {115}out(net, senc((at2_5,rt2_5),k_1))
+    )
+) | (
+    {117}let skB_1: skey = skB in
+    {118}let cs_3: bitstring = cs in
+    {119}let kc_1: key = kc in
+    {120}let skC_1: sskey = skC in
+    (
+        {121}!
+        {122}new sid_1: bitstring;
+        {123}new ss: bitstring;
+        {124}out(hprin, sid_1);
+        (
+            {125}out(hreq, (sid_1,ss))
+        ) | (
+            {126}let sid_2: bitstring = sid_1 in
+            {127}let ss_1: bitstring = ss in
+            {128}let hon_8: bool = true in
+            {129}out(net, (sid_2,h(ss_1)));
+            {130}in(net, m1: bitstring);
+            {131}let ((=sid_2,=ss_1,pkE: pkey,vk: spkey),k1: key) = tdec(m1,skB_1) in
+            {132}in(cons, =sid_2);
+            {133}let skCu: sskey = skC_1 in
+            {134}new rc1: channel;
+            {135}out(bp, (exch,cs_3,hon_8,spk(skCu),rc1));
+            {136}in(rc1, (at_2: bitstring,rt_2: bitstring,g_8: bitstring));
+            {137}new gid: bitstring;
+            {138}new r1: nonce;
+            {139}new r2: nonce;
+            {140}let ctA: bitstring = seal(at_2,pkE,(sid_2,gid,tagAT,zero),r1) in
+            {141}let ctR: bitstring = seal(rt_2,pkE,(sid_2,gid,tagRT,zero),r2) in
+            {142}let cm: bitstring = hmac((g_8,zero,rt_2),kc_1) in
+            {143}out(net, (gid,ctA,ctR,cm));
+            {144}in(net, m2: bitstring);
+            {145}let ((=sid_2,ts: bitstring,sg: bitstring),k2: key) = tdec(m2,skB_1) in
+            {146}if (checksign(sg,vk) = (fetchTag,sid_2,ts)) then
+            {147}out(net, senc((gid,ctA,ctR),k2));
+            {148}phase 1;
+            {149}in(net, m3: bitstring);
+            {150}let ((=sid_2,rtp_6: bitstring,opid: bitstring,sg3: bitstring),k3: key) = tdec(m3,skB_1) in
+            {151}if (checksign(sg3,vk) = (renewTag,sid_2,h(rtp_6),opid)) then
+            {152}if (hmac((g_8,zero,rtp_6),kc_1) = cm) then
+            {153}new rc2: channel;
+            {154}out(bp, (refr,cs_3,rtp_6,rc2));
+            {155}in(rc2, (at2_6: bitstring,rt2_6: bitstring));
+            {156}new gid2: bitstring;
+            {157}new r3: nonce;
+            {158}new r4: nonce;
+            {159}out(net, senc((gid2,seal(at2_6,pkE,(sid_2,gid2,tagAT,one),r3),seal(rt2_6,pkE,(sid_2,gid2,tagRT,one),r4)),k3))
+        )
+    ) | (
+        {160}!
+        {161}new sid_3: bitstring;
+        {162}new ss_2: bitstring;
+        {163}out(net, (sid_3,ss_2));
+        {164}let sid_4: bitstring = sid_3 in
+        {165}let ss_3: bitstring = ss_2 in
+        {166}let hon_9: bool = false in
+        {167}out(net, (sid_4,h(ss_3)));
+        {168}in(net, m1_1: bitstring);
+        {169}let ((=sid_4,=ss_3,pkE_1: pkey,vk_1: spkey),k1_1: key) = tdec(m1_1,skB_1) in
+        {170}in(net, =sid_4);
+        {171}let skCu_1: sskey = skC_1 in
+        {172}new rc1_1: channel;
+        {173}out(bp, (exch,cs_3,hon_9,spk(skCu_1),rc1_1));
+        {174}in(rc1_1, (at_3: bitstring,rt_3: bitstring,g_9: bitstring));
+        {175}new gid_1: bitstring;
+        {176}new r1_1: nonce;
+        {177}new r2_1: nonce;
+        {178}let ctA_1: bitstring = seal(at_3,pkE_1,(sid_4,gid_1,tagAT,zero),r1_1) in
+        {179}let ctR_1: bitstring = seal(rt_3,pkE_1,(sid_4,gid_1,tagRT,zero),r2_1) in
+        {180}let cm_1: bitstring = hmac((g_9,zero,rt_3),kc_1) in
+        {181}out(net, (gid_1,ctA_1,ctR_1,cm_1));
+        {182}in(net, m2_1: bitstring);
+        {183}let ((=sid_4,ts_1: bitstring,sg_1: bitstring),k2_1: key) = tdec(m2_1,skB_1) in
+        {184}if (checksign(sg_1,vk_1) = (fetchTag,sid_4,ts_1)) then
+        {185}out(net, senc((gid_1,ctA_1,ctR_1),k2_1));
+        {186}phase 1;
+        {187}in(net, m3_1: bitstring);
+        {188}let ((=sid_4,rtp_7: bitstring,opid_1: bitstring,sg3_1: bitstring),k3_1: key) = tdec(m3_1,skB_1) in
+        {189}if (checksign(sg3_1,vk_1) = (renewTag,sid_4,h(rtp_7),opid_1)) then
+        {190}if (hmac((g_9,zero,rtp_7),kc_1) = cm_1) then
+        {191}new rc2_1: channel;
+        {192}out(bp, (refr,cs_3,rtp_7,rc2_1));
+        {193}in(rc2_1, (at2_7: bitstring,rt2_7: bitstring));
+        {194}new gid2_1: bitstring;
+        {195}new r3_1: nonce;
+        {196}new r4_1: nonce;
+        {197}out(net, senc((gid2_1,seal(at2_7,pkE_1,(sid_4,gid2_1,tagAT,one),r3_1),seal(rt2_7,pkE_1,(sid_4,gid2_1,tagRT,one),r4_1)),k3_1))
+    )
+) | (
+    {198}!
+    {199}in(hprin, sid_5: bitstring);
+    {200}out(cons, sid_5)
+) | (
+    {201}let pkB: pkey = pk(skB) in
+    {202}let pkP: pkey = pk(skP) in
+    {203}!
+    {204}in(hreq, (sid_6: bitstring,ss_4: bitstring));
+    {205}new skE: skey;
+    {206}new skS: sskey;
+    {207}new k1_2: key;
+    {208}out(net, tenc(((sid_6,ss_4,pk(skE),spk(skS)),k1_2),pkB));
+    {209}new ts_2: bitstring;
+    {210}new k2_2: key;
+    {211}out(net, tenc(((sid_6,ts_2,sign((fetchTag,sid_6,ts_2),skS)),k2_2),pkB));
+    {212}in(net, c: bitstring);
+    {213}let (gid_2: bitstring,ctA_2: bitstring,ctR_2: bitstring) = sdec(c,k2_2) in
+    {214}let at_4: bitstring = unseal(ctA_2,skE,(sid_6,gid_2,tagAT,zero)) in
+    {215}let rt_4: bitstring = unseal(ctR_2,skE,(sid_6,gid_2,tagRT,zero)) in
+    {216}phase 1;
+    {217}new opid_2: bitstring;
+    {218}new k3_2: key;
+    {219}out(net, tenc(((sid_6,rt_4,opid_2,sign((renewTag,sid_6,h(rt_4),opid_2),skS)),k3_2),pkB));
+    {220}in(net, c2: bitstring);
+    {221}let (gid2_2: bitstring,ctA2: bitstring,ctR2: bitstring) = sdec(c2,k3_2) in
+    {222}let at2_8: bitstring = unseal(ctA2,skE,(sid_6,gid2_2,tagAT,one)) in
+    {223}let rt2_8: bitstring = unseal(ctR2,skE,(sid_6,gid2_2,tagRT,one)) in
+    {224}event RunnerRenewed(sid_6,rt2_8)
+) | (
+    {225}phase 1;
+    {226}out(net, skB);
+    {227}out(net, cs);
+    {228}out(net, kc);
+    {229}out(net, skC)
+)
+
+--  Process 1 (that is, process 0, with let moved downwards):
+{1}new skB: skey;
+{2}new skP: skey;
+{3}new cs: bitstring;
+{4}new kc: key;
+{5}new skC: sskey;
+{6}out(net, pk(skB));
+{7}out(net, pk(skP));
+(
+    {8}let cs_1: bitstring = cs in
+    (
+        {10}!
+        {11}in(bp, (=exch,=cs_1,hon: bool,cvk: spkey,rc: channel));
+        {12}new at: bitstring;
+        {13}new rt: bitstring;
+        {14}new g: bitstring;
+        {15}insert tok(rt,g,hon,cvk);
+        {16}if (hon = true) then
+            {17}event HonestToken(at);
+            {18}event HonestToken(rt);
+            {19}out(rc, (at,rt,g))
+        else
+            {20}out(rc, (at,rt,g))
+    ) | (
+        {21}!
+        {22}in(bp, (=refr,=cs_1,rtp: bitstring,rc_1: channel));
+        {33}get tok(=rtp,g_1: bitstring,hon_1: bool,cvk_1: spkey) in
+        {23}new at2: bitstring;
+        {24}new rt2: bitstring;
+        {25}insert tok2(rt2,g_1,hon_1);
+        {26}if (hon_1 = true) then
+            {27}event HonestToken(at2);
+            {28}event HonestToken(rt2);
+            {29}event HonestNew(at2);
+            {30}event HonestNew(rt2);
+            {31}out(rc_1, (at2,rt2))
+        else
+            {32}out(rc_1, (at2,rt2))
+    ) | (
+        {34}!
+        {35}in(net, (=refr,=cs_1,rtp_1: bitstring));
+        {46}get tok(=rtp_1,g_2: bitstring,hon_2: bool,cvk_2: spkey) in
+        {36}new at2_1: bitstring;
+        {37}new rt2_1: bitstring;
+        {38}insert tok2(rt2_1,g_2,hon_2);
+        {39}if (hon_2 = true) then
+            {40}event HonestToken(at2_1);
+            {41}event HonestToken(rt2_1);
+            {42}event HonestNew(at2_1);
+            {43}event HonestNew(rt2_1);
+            {44}out(net, (at2_1,rt2_1))
+        else
+            {45}out(net, (at2_1,rt2_1))
+    ) | (
+        {47}!
+        {48}in(net, m: bitstring);
+        {9}let skP_1: skey = skP in
+        {49}let ((rtp_2: bitstring,asrt: bitstring),k: key) = tdec(m,skP_1) in
+        {61}get tok(=rtp_2,g_3: bitstring,hon_3: bool,cvk_3: spkey) in
+        {50}let (=assertTag,jti: bitstring) = checksign(asrt,cvk_3) in
+        {51}new at2_2: bitstring;
+        {52}new rt2_2: bitstring;
+        {53}insert tok2(rt2_2,g_3,hon_3);
+        {54}if (hon_3 = true) then
+            {55}event HonestToken(at2_2);
+            {56}event HonestToken(rt2_2);
+            {57}event HonestNew(at2_2);
+            {58}event HonestNew(rt2_2);
+            {59}out(net, senc((at2_2,rt2_2),k))
+        else
+            {60}out(net, senc((at2_2,rt2_2),k))
+    )
+) | (
+    {62}phase 1;
+    {63}let cs_2: bitstring = cs in
+    (
+        {65}!
+        {66}in(bp, (=exch,=cs_2,hon_4: bool,cvk_4: spkey,rc_2: channel));
+        {67}new at_1: bitstring;
+        {68}new rt_1: bitstring;
+        {69}new g_4: bitstring;
+        {70}insert tok(rt_1,g_4,hon_4,cvk_4);
+        {71}if (hon_4 = true) then
+            {72}event HonestToken(at_1);
+            {73}event HonestToken(rt_1);
+            {74}out(rc_2, (at_1,rt_1,g_4))
+        else
+            {75}out(rc_2, (at_1,rt_1,g_4))
+    ) | (
+        {76}!
+        {77}in(bp, (=refr,=cs_2,rtp_3: bitstring,rc_3: channel));
+        {88}get tok(=rtp_3,g_5: bitstring,hon_5: bool,cvk_5: spkey) in
+        {78}new at2_3: bitstring;
+        {79}new rt2_3: bitstring;
+        {80}insert tok2(rt2_3,g_5,hon_5);
+        {81}if (hon_5 = true) then
+            {82}event HonestToken(at2_3);
+            {83}event HonestToken(rt2_3);
+            {84}event HonestNew(at2_3);
+            {85}event HonestNew(rt2_3);
+            {86}out(rc_3, (at2_3,rt2_3))
+        else
+            {87}out(rc_3, (at2_3,rt2_3))
+    ) | (
+        {89}!
+        {90}in(net, (=refr,=cs_2,rtp_4: bitstring));
+        {101}get tok(=rtp_4,g_6: bitstring,hon_6: bool,cvk_6: spkey) in
+        {91}new at2_4: bitstring;
+        {92}new rt2_4: bitstring;
+        {93}insert tok2(rt2_4,g_6,hon_6);
+        {94}if (hon_6 = true) then
+            {95}event HonestToken(at2_4);
+            {96}event HonestToken(rt2_4);
+            {97}event HonestNew(at2_4);
+            {98}event HonestNew(rt2_4);
+            {99}out(net, (at2_4,rt2_4))
+        else
+            {100}out(net, (at2_4,rt2_4))
+    ) | (
+        {102}!
+        {103}in(net, m_1: bitstring);
+        {64}let skP_2: skey = skP in
+        {104}let ((rtp_5: bitstring,asrt_1: bitstring),k_1: key) = tdec(m_1,skP_2) in
+        {116}get tok(=rtp_5,g_7: bitstring,hon_7: bool,cvk_7: spkey) in
+        {105}let (=assertTag,jti_1: bitstring) = checksign(asrt_1,cvk_7) in
+        {106}new at2_5: bitstring;
+        {107}new rt2_5: bitstring;
+        {108}insert tok2(rt2_5,g_7,hon_7);
+        {109}if (hon_7 = true) then
+            {110}event HonestToken(at2_5);
+            {111}event HonestToken(rt2_5);
+            {112}event HonestNew(at2_5);
+            {113}event HonestNew(rt2_5);
+            {114}out(net, senc((at2_5,rt2_5),k_1))
+        else
+            {115}out(net, senc((at2_5,rt2_5),k_1))
+    )
+) | (
+    {120}let skC_1: sskey = skC in
+    {119}let kc_1: key = kc in
+    {118}let cs_3: bitstring = cs in
+    {117}let skB_1: skey = skB in
+    (
+        {121}!
+        {122}new sid_1: bitstring;
+        {123}new ss: bitstring;
+        {124}out(hprin, sid_1);
+        (
+            {125}out(hreq, (sid_1,ss))
+        ) | (
+            {127}let ss_1: bitstring = ss in
+            {126}let sid_2: bitstring = sid_1 in
+            {129}out(net, (sid_2,h(ss_1)));
+            {130}in(net, m1: bitstring);
+            {131}let ((=sid_2,=ss_1,pkE: pkey,vk: spkey),k1: key) = tdec(m1,skB_1) in
+            {132}in(cons, =sid_2);
+            {134}new rc1: channel;
+            {133}let skCu: sskey = skC_1 in
+            {128}let hon_8: bool = true in
+            {135}out(bp, (exch,cs_3,hon_8,spk(skCu),rc1));
+            {136}in(rc1, (at_2: bitstring,rt_2: bitstring,g_8: bitstring));
+            {137}new gid: bitstring;
+            {138}new r1: nonce;
+            {139}new r2: nonce;
+            {142}let cm: bitstring = hmac((g_8,zero,rt_2),kc_1) in
+            {141}let ctR: bitstring = seal(rt_2,pkE,(sid_2,gid,tagRT,zero),r2) in
+            {140}let ctA: bitstring = seal(at_2,pkE,(sid_2,gid,tagAT,zero),r1) in
+            {143}out(net, (gid,ctA,ctR,cm));
+            {144}in(net, m2: bitstring);
+            {145}let ((=sid_2,ts: bitstring,sg: bitstring),k2: key) = tdec(m2,skB_1) in
+            {146}if (checksign(sg,vk) = (fetchTag,sid_2,ts)) then
+            {147}out(net, senc((gid,ctA,ctR),k2));
+            {148}phase 1;
+            {149}in(net, m3: bitstring);
+            {150}let ((=sid_2,rtp_6: bitstring,opid: bitstring,sg3: bitstring),k3: key) = tdec(m3,skB_1) in
+            {151}if (checksign(sg3,vk) = (renewTag,sid_2,h(rtp_6),opid)) then
+            {152}if (hmac((g_8,zero,rtp_6),kc_1) = cm) then
+            {153}new rc2: channel;
+            {154}out(bp, (refr,cs_3,rtp_6,rc2));
+            {155}in(rc2, (at2_6: bitstring,rt2_6: bitstring));
+            {156}new gid2: bitstring;
+            {157}new r3: nonce;
+            {158}new r4: nonce;
+            {159}out(net, senc((gid2,seal(at2_6,pkE,(sid_2,gid2,tagAT,one),r3),seal(rt2_6,pkE,(sid_2,gid2,tagRT,one),r4)),k3))
+        )
+    ) | (
+        {160}!
+        {161}new sid_3: bitstring;
+        {162}new ss_2: bitstring;
+        {163}out(net, (sid_3,ss_2));
+        {165}let ss_3: bitstring = ss_2 in
+        {164}let sid_4: bitstring = sid_3 in
+        {167}out(net, (sid_4,h(ss_3)));
+        {168}in(net, m1_1: bitstring);
+        {169}let ((=sid_4,=ss_3,pkE_1: pkey,vk_1: spkey),k1_1: key) = tdec(m1_1,skB_1) in
+        {170}in(net, =sid_4);
+        {172}new rc1_1: channel;
+        {171}let skCu_1: sskey = skC_1 in
+        {166}let hon_9: bool = false in
+        {173}out(bp, (exch,cs_3,hon_9,spk(skCu_1),rc1_1));
+        {174}in(rc1_1, (at_3: bitstring,rt_3: bitstring,g_9: bitstring));
+        {175}new gid_1: bitstring;
+        {176}new r1_1: nonce;
+        {177}new r2_1: nonce;
+        {180}let cm_1: bitstring = hmac((g_9,zero,rt_3),kc_1) in
+        {179}let ctR_1: bitstring = seal(rt_3,pkE_1,(sid_4,gid_1,tagRT,zero),r2_1) in
+        {178}let ctA_1: bitstring = seal(at_3,pkE_1,(sid_4,gid_1,tagAT,zero),r1_1) in
+        {181}out(net, (gid_1,ctA_1,ctR_1,cm_1));
+        {182}in(net, m2_1: bitstring);
+        {183}let ((=sid_4,ts_1: bitstring,sg_1: bitstring),k2_1: key) = tdec(m2_1,skB_1) in
+        {184}if (checksign(sg_1,vk_1) = (fetchTag,sid_4,ts_1)) then
+        {185}out(net, senc((gid_1,ctA_1,ctR_1),k2_1));
+        {186}phase 1;
+        {187}in(net, m3_1: bitstring);
+        {188}let ((=sid_4,rtp_7: bitstring,opid_1: bitstring,sg3_1: bitstring),k3_1: key) = tdec(m3_1,skB_1) in
+        {189}if (checksign(sg3_1,vk_1) = (renewTag,sid_4,h(rtp_7),opid_1)) then
+        {190}if (hmac((g_9,zero,rtp_7),kc_1) = cm_1) then
+        {191}new rc2_1: channel;
+        {192}out(bp, (refr,cs_3,rtp_7,rc2_1));
+        {193}in(rc2_1, (at2_7: bitstring,rt2_7: bitstring));
+        {194}new gid2_1: bitstring;
+        {195}new r3_1: nonce;
+        {196}new r4_1: nonce;
+        {197}out(net, senc((gid2_1,seal(at2_7,pkE_1,(sid_4,gid2_1,tagAT,one),r3_1),seal(rt2_7,pkE_1,(sid_4,gid2_1,tagRT,one),r4_1)),k3_1))
+    )
+) | (
+    {198}!
+    {199}in(hprin, sid_5: bitstring);
+    {200}out(cons, sid_5)
+) | (
+    {203}!
+    {204}in(hreq, (sid_6: bitstring,ss_4: bitstring));
+    {205}new skE: skey;
+    {206}new skS: sskey;
+    {207}new k1_2: key;
+    {201}let pkB: pkey = pk(skB) in
+    {208}out(net, tenc(((sid_6,ss_4,pk(skE),spk(skS)),k1_2),pkB));
+    {209}new ts_2: bitstring;
+    {210}new k2_2: key;
+    {211}out(net, tenc(((sid_6,ts_2,sign((fetchTag,sid_6,ts_2),skS)),k2_2),pkB));
+    {212}in(net, c: bitstring);
+    {213}let (gid_2: bitstring,ctA_2: bitstring,ctR_2: bitstring) = sdec(c,k2_2) in
+    {214}let at_4: bitstring = unseal(ctA_2,skE,(sid_6,gid_2,tagAT,zero)) in
+    {215}let rt_4: bitstring = unseal(ctR_2,skE,(sid_6,gid_2,tagRT,zero)) in
+    {216}phase 1;
+    {217}new opid_2: bitstring;
+    {218}new k3_2: key;
+    {219}out(net, tenc(((sid_6,rt_4,opid_2,sign((renewTag,sid_6,h(rt_4),opid_2),skS)),k3_2),pkB));
+    {220}in(net, c2: bitstring);
+    {221}let (gid2_2: bitstring,ctA2: bitstring,ctR2: bitstring) = sdec(c2,k3_2) in
+    {222}let at2_8: bitstring = unseal(ctA2,skE,(sid_6,gid2_2,tagAT,one)) in
+    {223}let rt2_8: bitstring = unseal(ctR2,skE,(sid_6,gid2_2,tagRT,one)) in
+    {224}event RunnerRenewed(sid_6,rt2_8)
+) | (
+    {225}phase 1;
+    {226}out(net, skB);
+    {227}out(net, cs);
+    {228}out(net, kc);
+    {229}out(net, skC)
+)
+
+-- Query not (event(HonestToken(x)) && attacker_p1(x)) in process 1.
+Translating the process into Horn clauses...
+Completing...
+200 rules inserted. Base: 199 rules (72 with conclusion selected). Queue: 48 rules.
+400 rules inserted. Base: 367 rules (92 with conclusion selected). Queue: 46 rules.
+600 rules inserted. Base: 446 rules (112 with conclusion selected). Queue: 44 rules.
+800 rules inserted. Base: 517 rules (134 with conclusion selected). Queue: 14 rules.
+1000 rules inserted. Base: 640 rules (161 with conclusion selected). Queue: 19 rules.
+Starting query not (event(HonestToken(x)) && attacker_p1(x))
+goal reachable: attacker_p1(jti_2) && attacker_p1(k_2) -> event(HonestToken(rt2_9)) && attacker_p1(rt2_9)
+Abbreviations:
+sid_7 = sid_1[!1 = @sid]
+ss_5 = ss[!1 = @sid]
+skE_1 = skE[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+skS_1 = skS[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+k1_3 = k1_2[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+rc1_2 = rc1[m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+g_10 = g[rc = rc1_2,cvk = spk(skC[]),hon = true,!1 = @sid_2]
+rt_5 = rt[rc = rc1_2,cvk = spk(skC[]),hon = true,!1 = @sid_2]
+rt2_9 = rt2_5[cvk_7 = spk(skC[]),hon_7 = true,g_7 = g_10,m_1 = tenc(((rt_5,sign((assertTag,jti_2),skC[])),k_2),pk(skP[])),!1 = @sid_3]
+
+Derivation:
+Abbreviations:
+sid_7 = sid_1[!1 = @sid]
+ss_5 = ss[!1 = @sid]
+skE_1 = skE[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+skS_1 = skS[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+k1_3 = k1_2[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+rc1_2 = rc1[m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+g_10 = g[rc = rc1_2,cvk = spk(skC[]),hon = true,!1 = @sid_2]
+rt_5 = rt[rc = rc1_2,cvk = spk(skC[]),hon = true,!1 = @sid_2]
+rt2_9 = rt2_5[cvk_7 = spk(skC[]),hon_7 = true,g_7 = g_10,m_1 = tenc(((rt_5,sign((assertTag,jti_2),skC[])),k_2),pk(skP[])),!1 = @sid_3]
+at2_9 = at2_5[cvk_7 = spk(skC[]),hon_7 = true,g_7 = g_10,m_1 = tenc(((rt_5,sign((assertTag,jti_2),skC[])),k_2),pk(skP[])),!1 = @sid_3]
+at_5 = at[rc = rc1_2,cvk = spk(skC[]),hon = true,!1 = @sid_2]
+gid_3 = gid[g_8 = g_10,rt_2 = rt_5,at_2 = at_5,m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+r1_2 = r1[g_8 = g_10,rt_2 = rt_5,at_2 = at_5,m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+r2_2 = r2[g_8 = g_10,rt_2 = rt_5,at_2 = at_5,m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+k2_3 = k2_2[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+opid_3 = opid_2[c = senc((gid_3,seal(at_5,pk(skE_1),(sid_7,gid_3,tagAT,zero),r1_2),seal(rt_5,pk(skE_1),(sid_7,gid_3,tagRT,zero),r2_2)),k2_3),ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+k3_3 = k3_2[c = senc((gid_3,seal(at_5,pk(skE_1),(sid_7,gid_3,tagAT,zero),r1_2),seal(rt_5,pk(skE_1),(sid_7,gid_3,tagRT,zero),r2_2)),k2_3),ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+ts_3 = ts_2[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+
+1. We assume as hypothesis that
+attacker_p1(k_2).
+
+2. The message pk(skP[]) may be sent to the attacker at output {7}.
+attacker(pk(skP[])).
+
+3. By 2, the attacker may know pk(skP[]).
+So the attacker may know pk(skP[]) in phase 1.
+attacker_p1(pk(skP[])).
+
+4. The message skC[] may be sent to the attacker in phase 1 at output {229}.
+attacker_p1(skC[]).
+
+5. We assume as hypothesis that
+attacker_p1(jti_2).
+
+6. Using the function assertTag the attacker may obtain assertTag in phase 1.
+attacker_p1(assertTag).
+
+7. By 6, the attacker may know assertTag in phase 1.
+By 5, the attacker may know jti_2 in phase 1.
+Using the function 2-tuple the attacker may obtain (assertTag,jti_2) in phase 1.
+attacker_p1((assertTag,jti_2)).
+
+8. By 7, the attacker may know (assertTag,jti_2) in phase 1.
+By 4, the attacker may know skC[] in phase 1.
+Using the function sign the attacker may obtain sign((assertTag,jti_2),skC[]) in phase 1.
+attacker_p1(sign((assertTag,jti_2),skC[])).
+
+9. The message skB[] may be sent to the attacker in phase 1 at output {226}.
+attacker_p1(skB[]).
+
+10. The message (sid_7,ss_5) may be sent on channel hreq[] at output {125}.
+mess(hreq[],(sid_7,ss_5)).
+
+11. The message (sid_7,ss_5) that may be sent on channel hreq[] by 10 may be received at input {204}.
+So the message tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])) may be sent to the attacker at output {208}.
+attacker(tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[]))).
+
+12. The message sid_7 may be sent on channel hprin[] at output {124}.
+mess(hprin[],sid_7).
+
+13. The message sid_7 that may be sent on channel hprin[] by 12 may be received at input {199}.
+So the message sid_7 may be sent on channel cons[] at output {200}.
+mess(cons[],sid_7).
+
+14. The message sid_7 that may be sent on channel hprin[] by 12 may be received at input {199}.
+So the message sid_7 may be sent on channel cons[] at output {200}.
+mess(cons[],sid_7).
+
+15. The message tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])) that the attacker may have by 11 may be received at input {130}.
+The message sid_7 that may be sent on channel cons[] by 14 may be received at input {132}.
+So the message (exch,cs[],true,spk(skC[]),rc1_2) may be sent on channel bp[] at output {135}.
+mess(bp[],(exch,cs[],true,spk(skC[]),rc1_2)).
+
+16. The message (exch,cs[],true,spk(skC[]),rc1_2) that may be sent on channel bp[] by 15 may be received at input {11}.
+So the message (at_5,rt_5,g_10) may be sent on channel rc1_2 at output {19}.
+mess(rc1_2,(at_5,rt_5,g_10)).
+
+17. The message (sid_7,ss_5) that may be sent on channel hreq[] by 10 may be received at input {204}.
+So the message tenc(((sid_7,ts_3,sign((fetchTag,sid_7,ts_3),skS_1)),k2_3),pk(skB[])) may be sent to the attacker at output {211}.
+attacker(tenc(((sid_7,ts_3,sign((fetchTag,sid_7,ts_3),skS_1)),k2_3),pk(skB[]))).
+
+18. The message tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])) that the attacker may have by 11 may be received at input {130}.
+The message sid_7 that may be sent on channel cons[] by 13 may be received at input {132}.
+The message (at_5,rt_5,g_10) that may be sent on channel rc1_2 by 16 may be received at input {136}.
+The message tenc(((sid_7,ts_3,sign((fetchTag,sid_7,ts_3),skS_1)),k2_3),pk(skB[])) that the attacker may have by 17 may be received at input {144}.
+So the message senc((gid_3,seal(at_5,pk(skE_1),(sid_7,gid_3,tagAT,zero),r1_2),seal(rt_5,pk(skE_1),(sid_7,gid_3,tagRT,zero),r2_2)),k2_3) may be sent to the attacker at output {147}.
+attacker(senc((gid_3,seal(at_5,pk(skE_1),(sid_7,gid_3,tagAT,zero),r1_2),seal(rt_5,pk(skE_1),(sid_7,gid_3,tagRT,zero),r2_2)),k2_3)).
+
+19. The message (sid_7,ss_5) that may be sent on channel hreq[] by 10 may be received at input {204}.
+The message senc((gid_3,seal(at_5,pk(skE_1),(sid_7,gid_3,tagAT,zero),r1_2),seal(rt_5,pk(skE_1),(sid_7,gid_3,tagRT,zero),r2_2)),k2_3) that the attacker may have by 18 may be received at input {212}.
+So the message tenc(((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k3_3),pk(skB[])) may be sent to the attacker in phase 1 at output {219}.
+attacker_p1(tenc(((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k3_3),pk(skB[]))).
+
+20. By 19, the attacker may know tenc(((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k3_3),pk(skB[])) in phase 1.
+By 9, the attacker may know skB[] in phase 1.
+Using the function tdec the attacker may obtain ((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k3_3) in phase 1.
+attacker_p1(((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k3_3)).
+
+21. By 20, the attacker may know ((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k3_3) in phase 1.
+Using the function 1-proj-2-tuple the attacker may obtain (sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)) in phase 1.
+attacker_p1((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1))).
+
+22. By 21, the attacker may know (sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)) in phase 1.
+Using the function 2-proj-4-tuple the attacker may obtain rt_5 in phase 1.
+attacker_p1(rt_5).
+
+23. By 22, the attacker may know rt_5 in phase 1.
+By 8, the attacker may know sign((assertTag,jti_2),skC[]) in phase 1.
+Using the function 2-tuple the attacker may obtain (rt_5,sign((assertTag,jti_2),skC[])) in phase 1.
+attacker_p1((rt_5,sign((assertTag,jti_2),skC[]))).
+
+24. By 23, the attacker may know (rt_5,sign((assertTag,jti_2),skC[])) in phase 1.
+By 1, the attacker may know k_2 in phase 1.
+Using the function 2-tuple the attacker may obtain ((rt_5,sign((assertTag,jti_2),skC[])),k_2) in phase 1.
+attacker_p1(((rt_5,sign((assertTag,jti_2),skC[])),k_2)).
+
+25. By 24, the attacker may know ((rt_5,sign((assertTag,jti_2),skC[])),k_2) in phase 1.
+By 3, the attacker may know pk(skP[]) in phase 1.
+Using the function tenc the attacker may obtain tenc(((rt_5,sign((assertTag,jti_2),skC[])),k_2),pk(skP[])) in phase 1.
+attacker_p1(tenc(((rt_5,sign((assertTag,jti_2),skC[])),k_2),pk(skP[]))).
+
+26. The message sid_7 that may be sent on channel hprin[] by 12 may be received at input {199}.
+So the message sid_7 may be sent on channel cons[] at output {200}.
+mess(cons[],sid_7).
+
+27. The message tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])) that the attacker may have by 11 may be received at input {130}.
+The message sid_7 that may be sent on channel cons[] by 26 may be received at input {132}.
+So the message (exch,cs[],true,spk(skC[]),rc1_2) may be sent on channel bp[] at output {135}.
+mess(bp[],(exch,cs[],true,spk(skC[]),rc1_2)).
+
+28. The message (exch,cs[],true,spk(skC[]),rc1_2) that may be sent on channel bp[] by 27 may be received at input {11}.
+So the entry tok(rt_5,g_10,true,spk(skC[])) may be inserted in a table at insert {15}.
+table(tok(rt_5,g_10,true,spk(skC[]))).
+
+29. By 28, a table may contain the entry tok(rt_5,g_10,true,spk(skC[])).
+So a table may contain the entry tok(rt_5,g_10,true,spk(skC[])) in phase 1.
+table_p1(tok(rt_5,g_10,true,spk(skC[]))).
+
+30. The message tenc(((rt_5,sign((assertTag,jti_2),skC[])),k_2),pk(skP[])) that the attacker may have in phase 1 by 25 may be received at input {103}.
+The entry tok(rt_5,g_10,true,spk(skC[])) that may be in a table in phase 1 by 29 may be read at get {116}.
+So the message senc((at2_9,rt2_9),k_2) may be sent to the attacker in phase 1 at output {114}.
+attacker_p1(senc((at2_9,rt2_9),k_2)).
+
+31. By 30, the attacker may know senc((at2_9,rt2_9),k_2) in phase 1.
+By 1, the attacker may know k_2 in phase 1.
+Using the function sdec the attacker may obtain (at2_9,rt2_9) in phase 1.
+attacker_p1((at2_9,rt2_9)).
+
+32. By 31, the attacker may know (at2_9,rt2_9) in phase 1.
+Using the function 2-proj-2-tuple the attacker may obtain rt2_9 in phase 1.
+attacker_p1(rt2_9).
+
+33. The message sid_7 that may be sent on channel hprin[] by 12 may be received at input {199}.
+So the message sid_7 may be sent on channel cons[] at output {200}.
+mess(cons[],sid_7).
+
+34. The message tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])) that the attacker may have by 11 may be received at input {130}.
+The message sid_7 that may be sent on channel cons[] by 33 may be received at input {132}.
+So the message (exch,cs[],true,spk(skC[]),rc1_2) may be sent on channel bp[] at output {135}.
+mess(bp[],(exch,cs[],true,spk(skC[]),rc1_2)).
+
+35. The message (exch,cs[],true,spk(skC[]),rc1_2) that may be sent on channel bp[] by 34 may be received at input {11}.
+So the entry tok(rt_5,g_10,true,spk(skC[])) may be inserted in a table at insert {15}.
+table(tok(rt_5,g_10,true,spk(skC[]))).
+
+36. By 35, a table may contain the entry tok(rt_5,g_10,true,spk(skC[])).
+So a table may contain the entry tok(rt_5,g_10,true,spk(skC[])) in phase 1.
+table_p1(tok(rt_5,g_10,true,spk(skC[]))).
+
+37. The message tenc(((rt_5,sign((assertTag,jti_2),skC[])),k_2),pk(skP[])) that the attacker may have in phase 1 by 25 may be received at input {103}.
+The entry tok(rt_5,g_10,true,spk(skC[])) that may be in a table in phase 1 by 36 may be read at get {116}.
+So event HonestToken(rt2_9) may be executed at {111}.
+event(HonestToken(rt2_9)).
+
+38. By 37, event(HonestToken(rt2_9)).
+By 32, attacker_p1(rt2_9).
+The goals are reached, combined in the following fact:
+event(HonestToken(rt2_9)) && attacker_p1(rt2_9).
+
+
+A more detailed output of the traces is available with
+  set traceDisplay = long.
+
+new skB: skey creating skB_2 at {1}
+
+new skP: skey creating skP_3 at {2}
+
+new cs: bitstring creating cs_4 at {3}
+
+new kc: key creating kc_2 at {4}
+
+new skC: sskey creating skC_2 at {5}
+
+out(net, ~M) with ~M = pk(skB_2) at {6}
+
+out(net, ~M_1) with ~M_1 = pk(skP_3) at {7}
+
+new sid_1: bitstring creating sid_8 at {122} in copy a
+
+new ss: bitstring creating ss_6 at {123} in copy a
+
+out(hprin, sid_8) at {124} in copy a received at {199} in copy a_1
+
+out(net, (~M_2,~M_3)) with ~M_2 = sid_8, ~M_3 = h(ss_6) at {129} in copy a
+
+out(hreq, (sid_8,ss_6)) at {125} in copy a received at {204} in copy a_2
+
+new skE: skey creating skE_2 at {205} in copy a_2
+
+new skS: sskey creating skS_2 at {206} in copy a_2
+
+new k1_2: key creating k1_4 at {207} in copy a_2
+
+out(net, ~M_4) with ~M_4 = tenc(((sid_8,ss_6,pk(skE_2),spk(skS_2)),k1_4),pk(skB_2)) at {208} in copy a_2
+
+new ts_2: bitstring creating ts_4 at {209} in copy a_2
+
+new k2_2: key creating k2_4 at {210} in copy a_2
+
+out(net, ~M_5) with ~M_5 = tenc(((sid_8,ts_4,sign((fetchTag,sid_8,ts_4),skS_2)),k2_4),pk(skB_2)) at {211} in copy a_2
+
+in(net, ~M_4) with ~M_4 = tenc(((sid_8,ss_6,pk(skE_2),spk(skS_2)),k1_4),pk(skB_2)) at {130} in copy a
+
+out(cons, sid_8) at {200} in copy a_1 received at {132} in copy a
+
+new rc1: channel creating rc1_3 at {134} in copy a
+
+out(bp, (exch,cs_4,true,spk(skC_2),rc1_3)) at {135} in copy a received at {11} in copy a_3
+
+new at: bitstring creating at_6 at {12} in copy a_3
+
+new rt: bitstring creating rt_6 at {13} in copy a_3
+
+new g: bitstring creating g_11 at {14} in copy a_3
+
+insert tok(rt_6,g_11,true,spk(skC_2)) at {15} in copy a_3
+
+event HonestToken(at_6) at {17} in copy a_3
+
+event HonestToken(rt_6) at {18} in copy a_3
+
+out(rc1_3, (at_6,rt_6,g_11)) at {19} in copy a_3 received at {136} in copy a
+
+new gid: bitstring creating gid_4 at {137} in copy a
+
+new r1: nonce creating r1_3 at {138} in copy a
+
+new r2: nonce creating r2_3 at {139} in copy a
+
+out(net, (~M_6,~M_7,~M_8,~M_9)) with ~M_6 = gid_4, ~M_7 = seal(at_6,pk(skE_2),(sid_8,gid_4,tagAT,zero),r1_3), ~M_8 = seal(rt_6,pk(skE_2),(sid_8,gid_4,tagRT,zero),r2_3), ~M_9 = hmac((g_11,zero,rt_6),kc_2) at {143} in copy a
+
+in(net, ~M_5) with ~M_5 = tenc(((sid_8,ts_4,sign((fetchTag,sid_8,ts_4),skS_2)),k2_4),pk(skB_2)) at {144} in copy a
+
+out(net, ~M_10) with ~M_10 = senc((gid_4,seal(at_6,pk(skE_2),(sid_8,gid_4,tagAT,zero),r1_3),seal(rt_6,pk(skE_2),(sid_8,gid_4,tagRT,zero),r2_3)),k2_4) at {147} in copy a
+
+in(net, ~M_10) with ~M_10 = senc((gid_4,seal(at_6,pk(skE_2),(sid_8,gid_4,tagAT,zero),r1_3),seal(rt_6,pk(skE_2),(sid_8,gid_4,tagRT,zero),r2_3)),k2_4) at {212} in copy a_2
+
+out(net, ~M_11) with ~M_11 = skB_2 at {226}
+
+out(net, ~M_12) with ~M_12 = cs_4 at {227}
+
+out(net, ~M_13) with ~M_13 = kc_2 at {228}
+
+out(net, ~M_14) with ~M_14 = skC_2 at {229}
+
+new opid_2: bitstring creating opid_4 at {217} in copy a_2
+
+new k3_2: key creating k3_4 at {218} in copy a_2
+
+out(net, ~M_15) with ~M_15 = tenc(((sid_8,rt_6,opid_4,sign((renewTag,sid_8,h(rt_6),opid_4),skS_2)),k3_4),pk(skB_2)) at {219} in copy a_2
+
+in(net, tenc(((2-proj-4-tuple(1-proj-2-tuple(tdec(~M_15,~M_11))),sign((assertTag,a_4),~M_14)),a_5),~M_1)) with tenc(((2-proj-4-tuple(1-proj-2-tuple(tdec(~M_15,~M_11))),sign((assertTag,a_4),~M_14)),a_5),~M_1) = tenc(((rt_6,sign((assertTag,a_4),skC_2)),a_5),pk(skP_3)) at {103} in copy a_6
+
+get tok(rt_6,g_11,true,spk(skC_2)) at {116} in copy a_6
+
+new at2_5: bitstring creating at2_10 at {106} in copy a_6
+
+new rt2_5: bitstring creating rt2_10 at {107} in copy a_6
+
+insert tok2(rt2_10,g_11,true) at {108} in copy a_6
+
+event HonestToken(at2_10) at {110} in copy a_6
+
+event HonestToken(rt2_10) at {111} in copy a_6 (goal)
+
+event HonestNew(at2_10) at {112} in copy a_6
+
+event HonestNew(rt2_10) at {113} in copy a_6
+
+out(net, ~M_16) with ~M_16 = senc((at2_10,rt2_10),a_5) at {114} in copy a_6
+
+The event HonestToken(rt2_10) is executed at {111} in copy a_6.
+The attacker has the message 2-proj-2-tuple(sdec(~M_16,a_5)) = rt2_10 in phase 1.
+A trace has been found.
+RESULT not (event(HonestToken(x)) && attacker_p1(x)) is false.
+-- Query not (event(HonestNew(x)) && attacker_p1(x)) in process 1.
+Translating the process into Horn clauses...
+Completing...
+200 rules inserted. Base: 199 rules (72 with conclusion selected). Queue: 42 rules.
+400 rules inserted. Base: 364 rules (90 with conclusion selected). Queue: 45 rules.
+600 rules inserted. Base: 438 rules (112 with conclusion selected). Queue: 44 rules.
+800 rules inserted. Base: 509 rules (135 with conclusion selected). Queue: 14 rules.
+1000 rules inserted. Base: 629 rules (159 with conclusion selected). Queue: 19 rules.
+Starting query not (event(HonestNew(x)) && attacker_p1(x))
+goal reachable: attacker_p1(jti_2) && attacker_p1(k_2) -> event(HonestNew(rt2_9)) && attacker_p1(rt2_9)
+Abbreviations:
+sid_7 = sid_1[!1 = @sid]
+ss_5 = ss[!1 = @sid]
+skE_1 = skE[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+skS_1 = skS[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+k1_3 = k1_2[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+rc1_2 = rc1[m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+g_10 = g[rc = rc1_2,cvk = spk(skC[]),hon = true,!1 = @sid_2]
+rt_5 = rt[rc = rc1_2,cvk = spk(skC[]),hon = true,!1 = @sid_2]
+rt2_9 = rt2_5[cvk_7 = spk(skC[]),hon_7 = true,g_7 = g_10,m_1 = tenc(((rt_5,sign((assertTag,jti_2),skC[])),k_2),pk(skP[])),!1 = @sid_3]
+
+Derivation:
+Abbreviations:
+sid_7 = sid_1[!1 = @sid]
+ss_5 = ss[!1 = @sid]
+skE_1 = skE[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+skS_1 = skS[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+k1_3 = k1_2[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+rc1_2 = rc1[m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+g_10 = g[rc = rc1_2,cvk = spk(skC[]),hon = true,!1 = @sid_2]
+rt_5 = rt[rc = rc1_2,cvk = spk(skC[]),hon = true,!1 = @sid_2]
+rt2_9 = rt2_5[cvk_7 = spk(skC[]),hon_7 = true,g_7 = g_10,m_1 = tenc(((rt_5,sign((assertTag,jti_2),skC[])),k_2),pk(skP[])),!1 = @sid_3]
+at2_9 = at2_5[cvk_7 = spk(skC[]),hon_7 = true,g_7 = g_10,m_1 = tenc(((rt_5,sign((assertTag,jti_2),skC[])),k_2),pk(skP[])),!1 = @sid_3]
+at_5 = at[rc = rc1_2,cvk = spk(skC[]),hon = true,!1 = @sid_2]
+gid_3 = gid[g_8 = g_10,rt_2 = rt_5,at_2 = at_5,m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+r1_2 = r1[g_8 = g_10,rt_2 = rt_5,at_2 = at_5,m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+r2_2 = r2[g_8 = g_10,rt_2 = rt_5,at_2 = at_5,m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+k2_3 = k2_2[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+opid_3 = opid_2[c = senc((gid_3,seal(at_5,pk(skE_1),(sid_7,gid_3,tagAT,zero),r1_2),seal(rt_5,pk(skE_1),(sid_7,gid_3,tagRT,zero),r2_2)),k2_3),ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+k3_3 = k3_2[c = senc((gid_3,seal(at_5,pk(skE_1),(sid_7,gid_3,tagAT,zero),r1_2),seal(rt_5,pk(skE_1),(sid_7,gid_3,tagRT,zero),r2_2)),k2_3),ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+ts_3 = ts_2[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+
+1. We assume as hypothesis that
+attacker_p1(k_2).
+
+2. The message pk(skP[]) may be sent to the attacker at output {7}.
+attacker(pk(skP[])).
+
+3. By 2, the attacker may know pk(skP[]).
+So the attacker may know pk(skP[]) in phase 1.
+attacker_p1(pk(skP[])).
+
+4. The message skC[] may be sent to the attacker in phase 1 at output {229}.
+attacker_p1(skC[]).
+
+5. We assume as hypothesis that
+attacker_p1(jti_2).
+
+6. Using the function assertTag the attacker may obtain assertTag in phase 1.
+attacker_p1(assertTag).
+
+7. By 6, the attacker may know assertTag in phase 1.
+By 5, the attacker may know jti_2 in phase 1.
+Using the function 2-tuple the attacker may obtain (assertTag,jti_2) in phase 1.
+attacker_p1((assertTag,jti_2)).
+
+8. By 7, the attacker may know (assertTag,jti_2) in phase 1.
+By 4, the attacker may know skC[] in phase 1.
+Using the function sign the attacker may obtain sign((assertTag,jti_2),skC[]) in phase 1.
+attacker_p1(sign((assertTag,jti_2),skC[])).
+
+9. The message skB[] may be sent to the attacker in phase 1 at output {226}.
+attacker_p1(skB[]).
+
+10. The message (sid_7,ss_5) may be sent on channel hreq[] at output {125}.
+mess(hreq[],(sid_7,ss_5)).
+
+11. The message (sid_7,ss_5) that may be sent on channel hreq[] by 10 may be received at input {204}.
+So the message tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])) may be sent to the attacker at output {208}.
+attacker(tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[]))).
+
+12. The message sid_7 may be sent on channel hprin[] at output {124}.
+mess(hprin[],sid_7).
+
+13. The message sid_7 that may be sent on channel hprin[] by 12 may be received at input {199}.
+So the message sid_7 may be sent on channel cons[] at output {200}.
+mess(cons[],sid_7).
+
+14. The message sid_7 that may be sent on channel hprin[] by 12 may be received at input {199}.
+So the message sid_7 may be sent on channel cons[] at output {200}.
+mess(cons[],sid_7).
+
+15. The message tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])) that the attacker may have by 11 may be received at input {130}.
+The message sid_7 that may be sent on channel cons[] by 14 may be received at input {132}.
+So the message (exch,cs[],true,spk(skC[]),rc1_2) may be sent on channel bp[] at output {135}.
+mess(bp[],(exch,cs[],true,spk(skC[]),rc1_2)).
+
+16. The message (exch,cs[],true,spk(skC[]),rc1_2) that may be sent on channel bp[] by 15 may be received at input {11}.
+So the message (at_5,rt_5,g_10) may be sent on channel rc1_2 at output {19}.
+mess(rc1_2,(at_5,rt_5,g_10)).
+
+17. The message (sid_7,ss_5) that may be sent on channel hreq[] by 10 may be received at input {204}.
+So the message tenc(((sid_7,ts_3,sign((fetchTag,sid_7,ts_3),skS_1)),k2_3),pk(skB[])) may be sent to the attacker at output {211}.
+attacker(tenc(((sid_7,ts_3,sign((fetchTag,sid_7,ts_3),skS_1)),k2_3),pk(skB[]))).
+
+18. The message tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])) that the attacker may have by 11 may be received at input {130}.
+The message sid_7 that may be sent on channel cons[] by 13 may be received at input {132}.
+The message (at_5,rt_5,g_10) that may be sent on channel rc1_2 by 16 may be received at input {136}.
+The message tenc(((sid_7,ts_3,sign((fetchTag,sid_7,ts_3),skS_1)),k2_3),pk(skB[])) that the attacker may have by 17 may be received at input {144}.
+So the message senc((gid_3,seal(at_5,pk(skE_1),(sid_7,gid_3,tagAT,zero),r1_2),seal(rt_5,pk(skE_1),(sid_7,gid_3,tagRT,zero),r2_2)),k2_3) may be sent to the attacker at output {147}.
+attacker(senc((gid_3,seal(at_5,pk(skE_1),(sid_7,gid_3,tagAT,zero),r1_2),seal(rt_5,pk(skE_1),(sid_7,gid_3,tagRT,zero),r2_2)),k2_3)).
+
+19. The message (sid_7,ss_5) that may be sent on channel hreq[] by 10 may be received at input {204}.
+The message senc((gid_3,seal(at_5,pk(skE_1),(sid_7,gid_3,tagAT,zero),r1_2),seal(rt_5,pk(skE_1),(sid_7,gid_3,tagRT,zero),r2_2)),k2_3) that the attacker may have by 18 may be received at input {212}.
+So the message tenc(((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k3_3),pk(skB[])) may be sent to the attacker in phase 1 at output {219}.
+attacker_p1(tenc(((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k3_3),pk(skB[]))).
+
+20. By 19, the attacker may know tenc(((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k3_3),pk(skB[])) in phase 1.
+By 9, the attacker may know skB[] in phase 1.
+Using the function tdec the attacker may obtain ((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k3_3) in phase 1.
+attacker_p1(((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k3_3)).
+
+21. By 20, the attacker may know ((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k3_3) in phase 1.
+Using the function 1-proj-2-tuple the attacker may obtain (sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)) in phase 1.
+attacker_p1((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1))).
+
+22. By 21, the attacker may know (sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)) in phase 1.
+Using the function 2-proj-4-tuple the attacker may obtain rt_5 in phase 1.
+attacker_p1(rt_5).
+
+23. By 22, the attacker may know rt_5 in phase 1.
+By 8, the attacker may know sign((assertTag,jti_2),skC[]) in phase 1.
+Using the function 2-tuple the attacker may obtain (rt_5,sign((assertTag,jti_2),skC[])) in phase 1.
+attacker_p1((rt_5,sign((assertTag,jti_2),skC[]))).
+
+24. By 23, the attacker may know (rt_5,sign((assertTag,jti_2),skC[])) in phase 1.
+By 1, the attacker may know k_2 in phase 1.
+Using the function 2-tuple the attacker may obtain ((rt_5,sign((assertTag,jti_2),skC[])),k_2) in phase 1.
+attacker_p1(((rt_5,sign((assertTag,jti_2),skC[])),k_2)).
+
+25. By 24, the attacker may know ((rt_5,sign((assertTag,jti_2),skC[])),k_2) in phase 1.
+By 3, the attacker may know pk(skP[]) in phase 1.
+Using the function tenc the attacker may obtain tenc(((rt_5,sign((assertTag,jti_2),skC[])),k_2),pk(skP[])) in phase 1.
+attacker_p1(tenc(((rt_5,sign((assertTag,jti_2),skC[])),k_2),pk(skP[]))).
+
+26. The message sid_7 that may be sent on channel hprin[] by 12 may be received at input {199}.
+So the message sid_7 may be sent on channel cons[] at output {200}.
+mess(cons[],sid_7).
+
+27. The message tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])) that the attacker may have by 11 may be received at input {130}.
+The message sid_7 that may be sent on channel cons[] by 26 may be received at input {132}.
+So the message (exch,cs[],true,spk(skC[]),rc1_2) may be sent on channel bp[] at output {135}.
+mess(bp[],(exch,cs[],true,spk(skC[]),rc1_2)).
+
+28. The message (exch,cs[],true,spk(skC[]),rc1_2) that may be sent on channel bp[] by 27 may be received at input {11}.
+So the entry tok(rt_5,g_10,true,spk(skC[])) may be inserted in a table at insert {15}.
+table(tok(rt_5,g_10,true,spk(skC[]))).
+
+29. By 28, a table may contain the entry tok(rt_5,g_10,true,spk(skC[])).
+So a table may contain the entry tok(rt_5,g_10,true,spk(skC[])) in phase 1.
+table_p1(tok(rt_5,g_10,true,spk(skC[]))).
+
+30. The message tenc(((rt_5,sign((assertTag,jti_2),skC[])),k_2),pk(skP[])) that the attacker may have in phase 1 by 25 may be received at input {103}.
+The entry tok(rt_5,g_10,true,spk(skC[])) that may be in a table in phase 1 by 29 may be read at get {116}.
+So the message senc((at2_9,rt2_9),k_2) may be sent to the attacker in phase 1 at output {114}.
+attacker_p1(senc((at2_9,rt2_9),k_2)).
+
+31. By 30, the attacker may know senc((at2_9,rt2_9),k_2) in phase 1.
+By 1, the attacker may know k_2 in phase 1.
+Using the function sdec the attacker may obtain (at2_9,rt2_9) in phase 1.
+attacker_p1((at2_9,rt2_9)).
+
+32. By 31, the attacker may know (at2_9,rt2_9) in phase 1.
+Using the function 2-proj-2-tuple the attacker may obtain rt2_9 in phase 1.
+attacker_p1(rt2_9).
+
+33. The message sid_7 that may be sent on channel hprin[] by 12 may be received at input {199}.
+So the message sid_7 may be sent on channel cons[] at output {200}.
+mess(cons[],sid_7).
+
+34. The message tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])) that the attacker may have by 11 may be received at input {130}.
+The message sid_7 that may be sent on channel cons[] by 33 may be received at input {132}.
+So the message (exch,cs[],true,spk(skC[]),rc1_2) may be sent on channel bp[] at output {135}.
+mess(bp[],(exch,cs[],true,spk(skC[]),rc1_2)).
+
+35. The message (exch,cs[],true,spk(skC[]),rc1_2) that may be sent on channel bp[] by 34 may be received at input {11}.
+So the entry tok(rt_5,g_10,true,spk(skC[])) may be inserted in a table at insert {15}.
+table(tok(rt_5,g_10,true,spk(skC[]))).
+
+36. By 35, a table may contain the entry tok(rt_5,g_10,true,spk(skC[])).
+So a table may contain the entry tok(rt_5,g_10,true,spk(skC[])) in phase 1.
+table_p1(tok(rt_5,g_10,true,spk(skC[]))).
+
+37. The message tenc(((rt_5,sign((assertTag,jti_2),skC[])),k_2),pk(skP[])) that the attacker may have in phase 1 by 25 may be received at input {103}.
+The entry tok(rt_5,g_10,true,spk(skC[])) that may be in a table in phase 1 by 36 may be read at get {116}.
+So event HonestNew(rt2_9) may be executed at {113}.
+event(HonestNew(rt2_9)).
+
+38. By 37, event(HonestNew(rt2_9)).
+By 32, attacker_p1(rt2_9).
+The goals are reached, combined in the following fact:
+event(HonestNew(rt2_9)) && attacker_p1(rt2_9).
+
+
+A more detailed output of the traces is available with
+  set traceDisplay = long.
+
+new skB: skey creating skB_2 at {1}
+
+new skP: skey creating skP_3 at {2}
+
+new cs: bitstring creating cs_4 at {3}
+
+new kc: key creating kc_2 at {4}
+
+new skC: sskey creating skC_2 at {5}
+
+out(net, ~M) with ~M = pk(skB_2) at {6}
+
+out(net, ~M_1) with ~M_1 = pk(skP_3) at {7}
+
+new sid_1: bitstring creating sid_8 at {122} in copy a
+
+new ss: bitstring creating ss_6 at {123} in copy a
+
+out(hprin, sid_8) at {124} in copy a received at {199} in copy a_1
+
+out(net, (~M_2,~M_3)) with ~M_2 = sid_8, ~M_3 = h(ss_6) at {129} in copy a
+
+out(hreq, (sid_8,ss_6)) at {125} in copy a received at {204} in copy a_2
+
+new skE: skey creating skE_2 at {205} in copy a_2
+
+new skS: sskey creating skS_2 at {206} in copy a_2
+
+new k1_2: key creating k1_4 at {207} in copy a_2
+
+out(net, ~M_4) with ~M_4 = tenc(((sid_8,ss_6,pk(skE_2),spk(skS_2)),k1_4),pk(skB_2)) at {208} in copy a_2
+
+new ts_2: bitstring creating ts_4 at {209} in copy a_2
+
+new k2_2: key creating k2_4 at {210} in copy a_2
+
+out(net, ~M_5) with ~M_5 = tenc(((sid_8,ts_4,sign((fetchTag,sid_8,ts_4),skS_2)),k2_4),pk(skB_2)) at {211} in copy a_2
+
+in(net, ~M_4) with ~M_4 = tenc(((sid_8,ss_6,pk(skE_2),spk(skS_2)),k1_4),pk(skB_2)) at {130} in copy a
+
+out(cons, sid_8) at {200} in copy a_1 received at {132} in copy a
+
+new rc1: channel creating rc1_3 at {134} in copy a
+
+out(bp, (exch,cs_4,true,spk(skC_2),rc1_3)) at {135} in copy a received at {11} in copy a_3
+
+new at: bitstring creating at_6 at {12} in copy a_3
+
+new rt: bitstring creating rt_6 at {13} in copy a_3
+
+new g: bitstring creating g_11 at {14} in copy a_3
+
+insert tok(rt_6,g_11,true,spk(skC_2)) at {15} in copy a_3
+
+event HonestToken(at_6) at {17} in copy a_3
+
+event HonestToken(rt_6) at {18} in copy a_3
+
+out(rc1_3, (at_6,rt_6,g_11)) at {19} in copy a_3 received at {136} in copy a
+
+new gid: bitstring creating gid_4 at {137} in copy a
+
+new r1: nonce creating r1_3 at {138} in copy a
+
+new r2: nonce creating r2_3 at {139} in copy a
+
+out(net, (~M_6,~M_7,~M_8,~M_9)) with ~M_6 = gid_4, ~M_7 = seal(at_6,pk(skE_2),(sid_8,gid_4,tagAT,zero),r1_3), ~M_8 = seal(rt_6,pk(skE_2),(sid_8,gid_4,tagRT,zero),r2_3), ~M_9 = hmac((g_11,zero,rt_6),kc_2) at {143} in copy a
+
+in(net, ~M_5) with ~M_5 = tenc(((sid_8,ts_4,sign((fetchTag,sid_8,ts_4),skS_2)),k2_4),pk(skB_2)) at {144} in copy a
+
+out(net, ~M_10) with ~M_10 = senc((gid_4,seal(at_6,pk(skE_2),(sid_8,gid_4,tagAT,zero),r1_3),seal(rt_6,pk(skE_2),(sid_8,gid_4,tagRT,zero),r2_3)),k2_4) at {147} in copy a
+
+in(net, ~M_10) with ~M_10 = senc((gid_4,seal(at_6,pk(skE_2),(sid_8,gid_4,tagAT,zero),r1_3),seal(rt_6,pk(skE_2),(sid_8,gid_4,tagRT,zero),r2_3)),k2_4) at {212} in copy a_2
+
+out(net, ~M_11) with ~M_11 = skB_2 at {226}
+
+out(net, ~M_12) with ~M_12 = cs_4 at {227}
+
+out(net, ~M_13) with ~M_13 = kc_2 at {228}
+
+out(net, ~M_14) with ~M_14 = skC_2 at {229}
+
+new opid_2: bitstring creating opid_4 at {217} in copy a_2
+
+new k3_2: key creating k3_4 at {218} in copy a_2
+
+out(net, ~M_15) with ~M_15 = tenc(((sid_8,rt_6,opid_4,sign((renewTag,sid_8,h(rt_6),opid_4),skS_2)),k3_4),pk(skB_2)) at {219} in copy a_2
+
+in(net, tenc(((2-proj-4-tuple(1-proj-2-tuple(tdec(~M_15,~M_11))),sign((assertTag,a_4),~M_14)),a_5),~M_1)) with tenc(((2-proj-4-tuple(1-proj-2-tuple(tdec(~M_15,~M_11))),sign((assertTag,a_4),~M_14)),a_5),~M_1) = tenc(((rt_6,sign((assertTag,a_4),skC_2)),a_5),pk(skP_3)) at {103} in copy a_6
+
+get tok(rt_6,g_11,true,spk(skC_2)) at {116} in copy a_6
+
+new at2_5: bitstring creating at2_10 at {106} in copy a_6
+
+new rt2_5: bitstring creating rt2_10 at {107} in copy a_6
+
+insert tok2(rt2_10,g_11,true) at {108} in copy a_6
+
+event HonestToken(at2_10) at {110} in copy a_6
+
+event HonestToken(rt2_10) at {111} in copy a_6
+
+event HonestNew(at2_10) at {112} in copy a_6
+
+event HonestNew(rt2_10) at {113} in copy a_6 (goal)
+
+out(net, ~M_16) with ~M_16 = senc((at2_10,rt2_10),a_5) at {114} in copy a_6
+
+The event HonestNew(rt2_10) is executed at {113} in copy a_6.
+The attacker has the message 2-proj-2-tuple(sdec(~M_16,a_5)) = rt2_10 in phase 1.
+A trace has been found.
+RESULT not (event(HonestNew(x)) && attacker_p1(x)) is false.
+-- Query not event(RunnerRenewed(s,t)) in process 1.
+Translating the process into Horn clauses...
+Completing...
+200 rules inserted. Base: 199 rules (72 with conclusion selected). Queue: 35 rules.
+400 rules inserted. Base: 361 rules (95 with conclusion selected). Queue: 32 rules.
+600 rules inserted. Base: 425 rules (111 with conclusion selected). Queue: 41 rules.
+800 rules inserted. Base: 511 rules (143 with conclusion selected). Queue: 15 rules.
+1000 rules inserted. Base: 590 rules (156 with conclusion selected). Queue: 9 rules.
+Starting query not event(RunnerRenewed(s,t))
+goal reachable: attacker_p1(t) -> event(RunnerRenewed(sid_7,t))
+Abbreviations:
+sid_7 = sid_1[!1 = @sid]
+
+Derivation:
+Abbreviations:
+sid_7 = sid_1[!1 = @sid]
+ss_5 = ss[!1 = @sid]
+skE_1 = skE[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+skS_1 = skS[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+k1_3 = k1_2[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+rc1_2 = rc1[m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+g_10 = g[rc = rc1_2,cvk = spk(skC[]),hon = true,!1 = @sid_2]
+rt_5 = rt[rc = rc1_2,cvk = spk(skC[]),hon = true,!1 = @sid_2]
+at_5 = at[rc = rc1_2,cvk = spk(skC[]),hon = true,!1 = @sid_2]
+gid_3 = gid[g_8 = g_10,rt_2 = rt_5,at_2 = at_5,m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+r1_2 = r1[g_8 = g_10,rt_2 = rt_5,at_2 = at_5,m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+r2_2 = r2[g_8 = g_10,rt_2 = rt_5,at_2 = at_5,m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+k2_3 = k2_2[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+k3_3 = k3_2[c = senc((gid_3,seal(at_5,pk(skE_1),(sid_7,gid_3,tagAT,zero),r1_2),seal(rt_5,pk(skE_1),(sid_7,gid_3,tagRT,zero),r2_2)),k2_3),ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+opid_3 = opid_2[c = senc((gid_3,seal(at_5,pk(skE_1),(sid_7,gid_3,tagAT,zero),r1_2),seal(rt_5,pk(skE_1),(sid_7,gid_3,tagRT,zero),r2_2)),k2_3),ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+ts_3 = ts_2[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+
+1. The message (sid_7,ss_5) may be sent on channel hreq[] at output {125}.
+mess(hreq[],(sid_7,ss_5)).
+
+2. The message (sid_7,ss_5) that may be sent on channel hreq[] by 1 may be received at input {204}.
+So the message tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])) may be sent to the attacker at output {208}.
+attacker(tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[]))).
+
+3. The message sid_7 may be sent on channel hprin[] at output {124}.
+mess(hprin[],sid_7).
+
+4. The message sid_7 that may be sent on channel hprin[] by 3 may be received at input {199}.
+So the message sid_7 may be sent on channel cons[] at output {200}.
+mess(cons[],sid_7).
+
+5. The message sid_7 that may be sent on channel hprin[] by 3 may be received at input {199}.
+So the message sid_7 may be sent on channel cons[] at output {200}.
+mess(cons[],sid_7).
+
+6. The message tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])) that the attacker may have by 2 may be received at input {130}.
+The message sid_7 that may be sent on channel cons[] by 5 may be received at input {132}.
+So the message (exch,cs[],true,spk(skC[]),rc1_2) may be sent on channel bp[] at output {135}.
+mess(bp[],(exch,cs[],true,spk(skC[]),rc1_2)).
+
+7. The message (exch,cs[],true,spk(skC[]),rc1_2) that may be sent on channel bp[] by 6 may be received at input {11}.
+So the message (at_5,rt_5,g_10) may be sent on channel rc1_2 at output {19}.
+mess(rc1_2,(at_5,rt_5,g_10)).
+
+8. The message (sid_7,ss_5) that may be sent on channel hreq[] by 1 may be received at input {204}.
+So the message tenc(((sid_7,ts_3,sign((fetchTag,sid_7,ts_3),skS_1)),k2_3),pk(skB[])) may be sent to the attacker at output {211}.
+attacker(tenc(((sid_7,ts_3,sign((fetchTag,sid_7,ts_3),skS_1)),k2_3),pk(skB[]))).
+
+9. The message tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])) that the attacker may have by 2 may be received at input {130}.
+The message sid_7 that may be sent on channel cons[] by 4 may be received at input {132}.
+The message (at_5,rt_5,g_10) that may be sent on channel rc1_2 by 7 may be received at input {136}.
+The message tenc(((sid_7,ts_3,sign((fetchTag,sid_7,ts_3),skS_1)),k2_3),pk(skB[])) that the attacker may have by 8 may be received at input {144}.
+So the message senc((gid_3,seal(at_5,pk(skE_1),(sid_7,gid_3,tagAT,zero),r1_2),seal(rt_5,pk(skE_1),(sid_7,gid_3,tagRT,zero),r2_2)),k2_3) may be sent to the attacker at output {147}.
+attacker(senc((gid_3,seal(at_5,pk(skE_1),(sid_7,gid_3,tagAT,zero),r1_2),seal(rt_5,pk(skE_1),(sid_7,gid_3,tagRT,zero),r2_2)),k2_3)).
+
+10. The message skB[] may be sent to the attacker in phase 1 at output {226}.
+attacker_p1(skB[]).
+
+11. The message (sid_7,ss_5) that may be sent on channel hreq[] by 1 may be received at input {204}.
+The message senc((gid_3,seal(at_5,pk(skE_1),(sid_7,gid_3,tagAT,zero),r1_2),seal(rt_5,pk(skE_1),(sid_7,gid_3,tagRT,zero),r2_2)),k2_3) that the attacker may have by 9 may be received at input {212}.
+So the message tenc(((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k3_3),pk(skB[])) may be sent to the attacker in phase 1 at output {219}.
+attacker_p1(tenc(((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k3_3),pk(skB[]))).
+
+12. By 11, the attacker may know tenc(((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k3_3),pk(skB[])) in phase 1.
+By 10, the attacker may know skB[] in phase 1.
+Using the function tdec the attacker may obtain ((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k3_3) in phase 1.
+attacker_p1(((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k3_3)).
+
+13. By 12, the attacker may know ((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k3_3) in phase 1.
+Using the function 2-proj-2-tuple the attacker may obtain k3_3 in phase 1.
+attacker_p1(k3_3).
+
+14. The attacker has some term r in phase 1.
+attacker_p1(r).
+
+15. Using the function one the attacker may obtain one in phase 1.
+attacker_p1(one).
+
+16. Using the function tagRT the attacker may obtain tagRT in phase 1.
+attacker_p1(tagRT).
+
+17. The attacker has some term gid2_3 in phase 1.
+attacker_p1(gid2_3).
+
+18. The message (sid_7,h(ss_5)) may be sent to the attacker at output {129}.
+attacker((sid_7,h(ss_5))).
+
+19. By 18, the attacker may know (sid_7,h(ss_5)).
+Using the function 1-proj-2-tuple the attacker may obtain sid_7.
+attacker(sid_7).
+
+20. By 19, the attacker may know sid_7.
+So the attacker may know sid_7 in phase 1.
+attacker_p1(sid_7).
+
+21. By 20, the attacker may know sid_7 in phase 1.
+By 17, the attacker may know gid2_3 in phase 1.
+By 16, the attacker may know tagRT in phase 1.
+By 15, the attacker may know one in phase 1.
+Using the function 4-tuple the attacker may obtain (sid_7,gid2_3,tagRT,one) in phase 1.
+attacker_p1((sid_7,gid2_3,tagRT,one)).
+
+22. By 2, the attacker may know tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])).
+So the attacker may know tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])) in phase 1.
+attacker_p1(tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[]))).
+
+23. By 22, the attacker may know tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])) in phase 1.
+By 10, the attacker may know skB[] in phase 1.
+Using the function tdec the attacker may obtain ((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3) in phase 1.
+attacker_p1(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3)).
+
+24. By 23, the attacker may know ((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3) in phase 1.
+Using the function 1-proj-2-tuple the attacker may obtain (sid_7,ss_5,pk(skE_1),spk(skS_1)) in phase 1.
+attacker_p1((sid_7,ss_5,pk(skE_1),spk(skS_1))).
+
+25. By 24, the attacker may know (sid_7,ss_5,pk(skE_1),spk(skS_1)) in phase 1.
+Using the function 3-proj-4-tuple the attacker may obtain pk(skE_1) in phase 1.
+attacker_p1(pk(skE_1)).
+
+26. We assume as hypothesis that
+attacker_p1(t).
+
+27. By 26, the attacker may know t in phase 1.
+By 25, the attacker may know pk(skE_1) in phase 1.
+By 21, the attacker may know (sid_7,gid2_3,tagRT,one) in phase 1.
+By 14, the attacker may know r in phase 1.
+Using the function seal the attacker may obtain seal(t,pk(skE_1),(sid_7,gid2_3,tagRT,one),r) in phase 1.
+attacker_p1(seal(t,pk(skE_1),(sid_7,gid2_3,tagRT,one),r)).
+
+28. The attacker has some term r_1 in phase 1.
+attacker_p1(r_1).
+
+29. Using the function tagAT the attacker may obtain tagAT in phase 1.
+attacker_p1(tagAT).
+
+30. By 20, the attacker may know sid_7 in phase 1.
+By 17, the attacker may know gid2_3 in phase 1.
+By 29, the attacker may know tagAT in phase 1.
+By 15, the attacker may know one in phase 1.
+Using the function 4-tuple the attacker may obtain (sid_7,gid2_3,tagAT,one) in phase 1.
+attacker_p1((sid_7,gid2_3,tagAT,one)).
+
+31. The attacker has some term at2_9 in phase 1.
+attacker_p1(at2_9).
+
+32. By 31, the attacker may know at2_9 in phase 1.
+By 25, the attacker may know pk(skE_1) in phase 1.
+By 30, the attacker may know (sid_7,gid2_3,tagAT,one) in phase 1.
+By 28, the attacker may know r_1 in phase 1.
+Using the function seal the attacker may obtain seal(at2_9,pk(skE_1),(sid_7,gid2_3,tagAT,one),r_1) in phase 1.
+attacker_p1(seal(at2_9,pk(skE_1),(sid_7,gid2_3,tagAT,one),r_1)).
+
+33. By 17, the attacker may know gid2_3 in phase 1.
+By 32, the attacker may know seal(at2_9,pk(skE_1),(sid_7,gid2_3,tagAT,one),r_1) in phase 1.
+By 27, the attacker may know seal(t,pk(skE_1),(sid_7,gid2_3,tagRT,one),r) in phase 1.
+Using the function 3-tuple the attacker may obtain (gid2_3,seal(at2_9,pk(skE_1),(sid_7,gid2_3,tagAT,one),r_1),seal(t,pk(skE_1),(sid_7,gid2_3,tagRT,one),r)) in phase 1.
+attacker_p1((gid2_3,seal(at2_9,pk(skE_1),(sid_7,gid2_3,tagAT,one),r_1),seal(t,pk(skE_1),(sid_7,gid2_3,tagRT,one),r))).
+
+34. By 33, the attacker may know (gid2_3,seal(at2_9,pk(skE_1),(sid_7,gid2_3,tagAT,one),r_1),seal(t,pk(skE_1),(sid_7,gid2_3,tagRT,one),r)) in phase 1.
+By 13, the attacker may know k3_3 in phase 1.
+Using the function senc the attacker may obtain senc((gid2_3,seal(at2_9,pk(skE_1),(sid_7,gid2_3,tagAT,one),r_1),seal(t,pk(skE_1),(sid_7,gid2_3,tagRT,one),r)),k3_3) in phase 1.
+attacker_p1(senc((gid2_3,seal(at2_9,pk(skE_1),(sid_7,gid2_3,tagAT,one),r_1),seal(t,pk(skE_1),(sid_7,gid2_3,tagRT,one),r)),k3_3)).
+
+35. The message (sid_7,ss_5) that may be sent on channel hreq[] by 1 may be received at input {204}.
+The message senc((gid_3,seal(at_5,pk(skE_1),(sid_7,gid_3,tagAT,zero),r1_2),seal(rt_5,pk(skE_1),(sid_7,gid_3,tagRT,zero),r2_2)),k2_3) that the attacker may have by 9 may be received at input {212}.
+The message senc((gid2_3,seal(at2_9,pk(skE_1),(sid_7,gid2_3,tagAT,one),r_1),seal(t,pk(skE_1),(sid_7,gid2_3,tagRT,one),r)),k3_3) that the attacker may have in phase 1 by 34 may be received at input {220}.
+So event RunnerRenewed(sid_7,t) may be executed at {224}.
+event(RunnerRenewed(sid_7,t)).
+
+36. By 35, event(RunnerRenewed(sid_7,t)).
+The goal is reached, represented in the following fact:
+event(RunnerRenewed(sid_7,t)).
+
+
+Could not find a trace corresponding to this derivation.
+goal reachable: attacker_p1(k_2) -> event(RunnerRenewed(sid_7,rt2_9))
+Abbreviations:
+sid_7 = sid_1[!1 = @sid]
+ss_5 = ss[!1 = @sid]
+skE_1 = skE[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+skS_1 = skS[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+k1_3 = k1_2[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+rc1_2 = rc1[m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+g_10 = g[rc = rc1_2,cvk = spk(skC[]),hon = true,!1 = @sid_2]
+rt_5 = rt[rc = rc1_2,cvk = spk(skC[]),hon = true,!1 = @sid_2]
+at_5 = at[rc = rc1_2,cvk = spk(skC[]),hon = true,!1 = @sid_2]
+gid_3 = gid[g_8 = g_10,rt_2 = rt_5,at_2 = at_5,m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+r1_2 = r1[g_8 = g_10,rt_2 = rt_5,at_2 = at_5,m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+r2_2 = r2[g_8 = g_10,rt_2 = rt_5,at_2 = at_5,m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+k2_3 = k2_2[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+opid_3 = opid_2[c = senc((gid_3,seal(at_5,pk(skE_1),(sid_7,gid_3,tagAT,zero),r1_2),seal(rt_5,pk(skE_1),(sid_7,gid_3,tagRT,zero),r2_2)),k2_3),ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+ts_3 = ts_2[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+rc2_2 = rc2[m3 = tenc(((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k_2),pk(skB[])),m2 = tenc(((sid_7,ts_3,sign((fetchTag,sid_7,ts_3),skS_1)),k2_3),pk(skB[])),g_8 = g_10,rt_2 = rt_5,at_2 = at_5,m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+rt2_9 = rt2_3[cvk_5 = spk(skC[]),hon_5 = true,g_5 = g_10,rc_3 = rc2_2,rtp_3 = rt_5,!1 = @sid_3]
+
+Derivation:
+Abbreviations:
+sid_7 = sid_1[!1 = @sid]
+ss_5 = ss[!1 = @sid]
+skE_1 = skE[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+skS_1 = skS[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+k1_3 = k1_2[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+rc1_2 = rc1[m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+g_10 = g[rc = rc1_2,cvk = spk(skC[]),hon = true,!1 = @sid_2]
+rt_5 = rt[rc = rc1_2,cvk = spk(skC[]),hon = true,!1 = @sid_2]
+at_5 = at[rc = rc1_2,cvk = spk(skC[]),hon = true,!1 = @sid_2]
+gid_3 = gid[g_8 = g_10,rt_2 = rt_5,at_2 = at_5,m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+r1_2 = r1[g_8 = g_10,rt_2 = rt_5,at_2 = at_5,m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+r2_2 = r2[g_8 = g_10,rt_2 = rt_5,at_2 = at_5,m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+k2_3 = k2_2[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+opid_3 = opid_2[c = senc((gid_3,seal(at_5,pk(skE_1),(sid_7,gid_3,tagAT,zero),r1_2),seal(rt_5,pk(skE_1),(sid_7,gid_3,tagRT,zero),r2_2)),k2_3),ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+ts_3 = ts_2[ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+rc2_2 = rc2[m3 = tenc(((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k_2),pk(skB[])),m2 = tenc(((sid_7,ts_3,sign((fetchTag,sid_7,ts_3),skS_1)),k2_3),pk(skB[])),g_8 = g_10,rt_2 = rt_5,at_2 = at_5,m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+rt2_9 = rt2_3[cvk_5 = spk(skC[]),hon_5 = true,g_5 = g_10,rc_3 = rc2_2,rtp_3 = rt_5,!1 = @sid_3]
+at2_9 = at2_3[cvk_5 = spk(skC[]),hon_5 = true,g_5 = g_10,rc_3 = rc2_2,rtp_3 = rt_5,!1 = @sid_3]
+gid2_3 = gid2[rt2_6 = rt2_9,at2_6 = at2_9,m3 = tenc(((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k_2),pk(skB[])),m2 = tenc(((sid_7,ts_3,sign((fetchTag,sid_7,ts_3),skS_1)),k2_3),pk(skB[])),g_8 = g_10,rt_2 = rt_5,at_2 = at_5,m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+r3_2 = r3[rt2_6 = rt2_9,at2_6 = at2_9,m3 = tenc(((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k_2),pk(skB[])),m2 = tenc(((sid_7,ts_3,sign((fetchTag,sid_7,ts_3),skS_1)),k2_3),pk(skB[])),g_8 = g_10,rt_2 = rt_5,at_2 = at_5,m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+r4_2 = r4[rt2_6 = rt2_9,at2_6 = at2_9,m3 = tenc(((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k_2),pk(skB[])),m2 = tenc(((sid_7,ts_3,sign((fetchTag,sid_7,ts_3),skS_1)),k2_3),pk(skB[])),g_8 = g_10,rt_2 = rt_5,at_2 = at_5,m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+g_11 = g[rc = rc1_2,cvk = spk(skC[]),hon = true,!1 = @sid_4]
+rt_6 = rt[rc = rc1_2,cvk = spk(skC[]),hon = true,!1 = @sid_4]
+at_6 = at[rc = rc1_2,cvk = spk(skC[]),hon = true,!1 = @sid_4]
+gid_4 = gid[g_8 = g_11,rt_2 = rt_6,at_2 = at_6,m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+r1_3 = r1[g_8 = g_11,rt_2 = rt_6,at_2 = at_6,m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+r2_3 = r2[g_8 = g_11,rt_2 = rt_6,at_2 = at_6,m1 = tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])),!1 = @sid]
+k3_3 = k3_2[c = senc((gid_4,seal(at_6,pk(skE_1),(sid_7,gid_4,tagAT,zero),r1_3),seal(rt_6,pk(skE_1),(sid_7,gid_4,tagRT,zero),r2_3)),k2_3),ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+k3_4 = k3_2[c = senc((gid_3,seal(at_5,pk(skE_1),(sid_7,gid_3,tagAT,zero),r1_2),seal(rt_5,pk(skE_1),(sid_7,gid_3,tagRT,zero),r2_2)),k2_3),ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+opid_4 = opid_2[c = senc((gid_4,seal(at_6,pk(skE_1),(sid_7,gid_4,tagAT,zero),r1_3),seal(rt_6,pk(skE_1),(sid_7,gid_4,tagRT,zero),r2_3)),k2_3),ss_4 = ss_5,sid_6 = sid_7,!1 = @sid_1]
+
+1. The message (sid_7,ss_5) may be sent on channel hreq[] at output {125}.
+mess(hreq[],(sid_7,ss_5)).
+
+2. The message (sid_7,ss_5) that may be sent on channel hreq[] by 1 may be received at input {204}.
+So the message tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])) may be sent to the attacker at output {208}.
+attacker(tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[]))).
+
+3. The message sid_7 may be sent on channel hprin[] at output {124}.
+mess(hprin[],sid_7).
+
+4. The message sid_7 that may be sent on channel hprin[] by 3 may be received at input {199}.
+So the message sid_7 may be sent on channel cons[] at output {200}.
+mess(cons[],sid_7).
+
+5. The message sid_7 that may be sent on channel hprin[] by 3 may be received at input {199}.
+So the message sid_7 may be sent on channel cons[] at output {200}.
+mess(cons[],sid_7).
+
+6. The message tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])) that the attacker may have by 2 may be received at input {130}.
+The message sid_7 that may be sent on channel cons[] by 5 may be received at input {132}.
+So the message (exch,cs[],true,spk(skC[]),rc1_2) may be sent on channel bp[] at output {135}.
+mess(bp[],(exch,cs[],true,spk(skC[]),rc1_2)).
+
+7. The message (exch,cs[],true,spk(skC[]),rc1_2) that may be sent on channel bp[] by 6 may be received at input {11}.
+So the message (at_6,rt_6,g_11) may be sent on channel rc1_2 at output {19}.
+mess(rc1_2,(at_6,rt_6,g_11)).
+
+8. The message (sid_7,ss_5) that may be sent on channel hreq[] by 1 may be received at input {204}.
+So the message tenc(((sid_7,ts_3,sign((fetchTag,sid_7,ts_3),skS_1)),k2_3),pk(skB[])) may be sent to the attacker at output {211}.
+attacker(tenc(((sid_7,ts_3,sign((fetchTag,sid_7,ts_3),skS_1)),k2_3),pk(skB[]))).
+
+9. The message tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])) that the attacker may have by 2 may be received at input {130}.
+The message sid_7 that may be sent on channel cons[] by 4 may be received at input {132}.
+The message (at_6,rt_6,g_11) that may be sent on channel rc1_2 by 7 may be received at input {136}.
+The message tenc(((sid_7,ts_3,sign((fetchTag,sid_7,ts_3),skS_1)),k2_3),pk(skB[])) that the attacker may have by 8 may be received at input {144}.
+So the message senc((gid_4,seal(at_6,pk(skE_1),(sid_7,gid_4,tagAT,zero),r1_3),seal(rt_6,pk(skE_1),(sid_7,gid_4,tagRT,zero),r2_3)),k2_3) may be sent to the attacker at output {147}.
+attacker(senc((gid_4,seal(at_6,pk(skE_1),(sid_7,gid_4,tagAT,zero),r1_3),seal(rt_6,pk(skE_1),(sid_7,gid_4,tagRT,zero),r2_3)),k2_3)).
+
+10. The message skB[] may be sent to the attacker in phase 1 at output {226}.
+attacker_p1(skB[]).
+
+11. The message (sid_7,ss_5) that may be sent on channel hreq[] by 1 may be received at input {204}.
+The message senc((gid_4,seal(at_6,pk(skE_1),(sid_7,gid_4,tagAT,zero),r1_3),seal(rt_6,pk(skE_1),(sid_7,gid_4,tagRT,zero),r2_3)),k2_3) that the attacker may have by 9 may be received at input {212}.
+So the message tenc(((sid_7,rt_6,opid_4,sign((renewTag,sid_7,h(rt_6),opid_4),skS_1)),k3_3),pk(skB[])) may be sent to the attacker in phase 1 at output {219}.
+attacker_p1(tenc(((sid_7,rt_6,opid_4,sign((renewTag,sid_7,h(rt_6),opid_4),skS_1)),k3_3),pk(skB[]))).
+
+12. By 11, the attacker may know tenc(((sid_7,rt_6,opid_4,sign((renewTag,sid_7,h(rt_6),opid_4),skS_1)),k3_3),pk(skB[])) in phase 1.
+By 10, the attacker may know skB[] in phase 1.
+Using the function tdec the attacker may obtain ((sid_7,rt_6,opid_4,sign((renewTag,sid_7,h(rt_6),opid_4),skS_1)),k3_3) in phase 1.
+attacker_p1(((sid_7,rt_6,opid_4,sign((renewTag,sid_7,h(rt_6),opid_4),skS_1)),k3_3)).
+
+13. By 12, the attacker may know ((sid_7,rt_6,opid_4,sign((renewTag,sid_7,h(rt_6),opid_4),skS_1)),k3_3) in phase 1.
+Using the function 2-proj-2-tuple the attacker may obtain k3_3 in phase 1.
+attacker_p1(k3_3).
+
+14. We assume as hypothesis that
+attacker_p1(k_2).
+
+15. The message sid_7 that may be sent on channel hprin[] by 3 may be received at input {199}.
+So the message sid_7 may be sent on channel cons[] at output {200}.
+mess(cons[],sid_7).
+
+16. The message sid_7 that may be sent on channel hprin[] by 3 may be received at input {199}.
+So the message sid_7 may be sent on channel cons[] at output {200}.
+mess(cons[],sid_7).
+
+17. The message tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])) that the attacker may have by 2 may be received at input {130}.
+The message sid_7 that may be sent on channel cons[] by 16 may be received at input {132}.
+So the message (exch,cs[],true,spk(skC[]),rc1_2) may be sent on channel bp[] at output {135}.
+mess(bp[],(exch,cs[],true,spk(skC[]),rc1_2)).
+
+18. The message (exch,cs[],true,spk(skC[]),rc1_2) that may be sent on channel bp[] by 17 may be received at input {11}.
+So the message (at_5,rt_5,g_10) may be sent on channel rc1_2 at output {19}.
+mess(rc1_2,(at_5,rt_5,g_10)).
+
+19. By 10, the attacker may know skB[] in phase 1.
+Using the function pk the attacker may obtain pk(skB[]) in phase 1.
+attacker_p1(pk(skB[])).
+
+20. The message sid_7 that may be sent on channel hprin[] by 3 may be received at input {199}.
+So the message sid_7 may be sent on channel cons[] at output {200}.
+mess(cons[],sid_7).
+
+21. The message sid_7 that may be sent on channel hprin[] by 3 may be received at input {199}.
+So the message sid_7 may be sent on channel cons[] at output {200}.
+mess(cons[],sid_7).
+
+22. The message tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])) that the attacker may have by 2 may be received at input {130}.
+The message sid_7 that may be sent on channel cons[] by 21 may be received at input {132}.
+So the message (exch,cs[],true,spk(skC[]),rc1_2) may be sent on channel bp[] at output {135}.
+mess(bp[],(exch,cs[],true,spk(skC[]),rc1_2)).
+
+23. The message (exch,cs[],true,spk(skC[]),rc1_2) that may be sent on channel bp[] by 22 may be received at input {11}.
+So the message (at_5,rt_5,g_10) may be sent on channel rc1_2 at output {19}.
+mess(rc1_2,(at_5,rt_5,g_10)).
+
+24. The message tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])) that the attacker may have by 2 may be received at input {130}.
+The message sid_7 that may be sent on channel cons[] by 20 may be received at input {132}.
+The message (at_5,rt_5,g_10) that may be sent on channel rc1_2 by 23 may be received at input {136}.
+The message tenc(((sid_7,ts_3,sign((fetchTag,sid_7,ts_3),skS_1)),k2_3),pk(skB[])) that the attacker may have by 8 may be received at input {144}.
+So the message senc((gid_3,seal(at_5,pk(skE_1),(sid_7,gid_3,tagAT,zero),r1_2),seal(rt_5,pk(skE_1),(sid_7,gid_3,tagRT,zero),r2_2)),k2_3) may be sent to the attacker at output {147}.
+attacker(senc((gid_3,seal(at_5,pk(skE_1),(sid_7,gid_3,tagAT,zero),r1_2),seal(rt_5,pk(skE_1),(sid_7,gid_3,tagRT,zero),r2_2)),k2_3)).
+
+25. The message (sid_7,ss_5) that may be sent on channel hreq[] by 1 may be received at input {204}.
+The message senc((gid_3,seal(at_5,pk(skE_1),(sid_7,gid_3,tagAT,zero),r1_2),seal(rt_5,pk(skE_1),(sid_7,gid_3,tagRT,zero),r2_2)),k2_3) that the attacker may have by 24 may be received at input {212}.
+So the message tenc(((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k3_4),pk(skB[])) may be sent to the attacker in phase 1 at output {219}.
+attacker_p1(tenc(((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k3_4),pk(skB[]))).
+
+26. By 25, the attacker may know tenc(((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k3_4),pk(skB[])) in phase 1.
+By 10, the attacker may know skB[] in phase 1.
+Using the function tdec the attacker may obtain ((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k3_4) in phase 1.
+attacker_p1(((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k3_4)).
+
+27. By 26, the attacker may know ((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k3_4) in phase 1.
+Using the function 1-proj-2-tuple the attacker may obtain (sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)) in phase 1.
+attacker_p1((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1))).
+
+28. By 27, the attacker may know (sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)) in phase 1.
+Using the function 4-proj-4-tuple the attacker may obtain sign((renewTag,sid_7,h(rt_5),opid_3),skS_1) in phase 1.
+attacker_p1(sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)).
+
+29. By 27, the attacker may know (sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)) in phase 1.
+Using the function 3-proj-4-tuple the attacker may obtain opid_3 in phase 1.
+attacker_p1(opid_3).
+
+30. By 27, the attacker may know (sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)) in phase 1.
+Using the function 2-proj-4-tuple the attacker may obtain rt_5 in phase 1.
+attacker_p1(rt_5).
+
+31. The message (sid_7,h(ss_5)) may be sent to the attacker at output {129}.
+attacker((sid_7,h(ss_5))).
+
+32. By 31, the attacker may know (sid_7,h(ss_5)).
+Using the function 1-proj-2-tuple the attacker may obtain sid_7.
+attacker(sid_7).
+
+33. By 32, the attacker may know sid_7.
+So the attacker may know sid_7 in phase 1.
+attacker_p1(sid_7).
+
+34. By 33, the attacker may know sid_7 in phase 1.
+By 30, the attacker may know rt_5 in phase 1.
+By 29, the attacker may know opid_3 in phase 1.
+By 28, the attacker may know sign((renewTag,sid_7,h(rt_5),opid_3),skS_1) in phase 1.
+Using the function 4-tuple the attacker may obtain (sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)) in phase 1.
+attacker_p1((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1))).
+
+35. By 34, the attacker may know (sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)) in phase 1.
+By 14, the attacker may know k_2 in phase 1.
+Using the function 2-tuple the attacker may obtain ((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k_2) in phase 1.
+attacker_p1(((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k_2)).
+
+36. By 35, the attacker may know ((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k_2) in phase 1.
+By 19, the attacker may know pk(skB[]) in phase 1.
+Using the function tenc the attacker may obtain tenc(((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k_2),pk(skB[])) in phase 1.
+attacker_p1(tenc(((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k_2),pk(skB[]))).
+
+37. The message sid_7 that may be sent on channel hprin[] by 3 may be received at input {199}.
+So the message sid_7 may be sent on channel cons[] at output {200}.
+mess(cons[],sid_7).
+
+38. The message sid_7 that may be sent on channel hprin[] by 3 may be received at input {199}.
+So the message sid_7 may be sent on channel cons[] at output {200}.
+mess(cons[],sid_7).
+
+39. The message tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])) that the attacker may have by 2 may be received at input {130}.
+The message sid_7 that may be sent on channel cons[] by 38 may be received at input {132}.
+So the message (exch,cs[],true,spk(skC[]),rc1_2) may be sent on channel bp[] at output {135}.
+mess(bp[],(exch,cs[],true,spk(skC[]),rc1_2)).
+
+40. The message (exch,cs[],true,spk(skC[]),rc1_2) that may be sent on channel bp[] by 39 may be received at input {11}.
+So the message (at_5,rt_5,g_10) may be sent on channel rc1_2 at output {19}.
+mess(rc1_2,(at_5,rt_5,g_10)).
+
+41. The message tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])) that the attacker may have by 2 may be received at input {130}.
+The message sid_7 that may be sent on channel cons[] by 37 may be received at input {132}.
+The message (at_5,rt_5,g_10) that may be sent on channel rc1_2 by 40 may be received at input {136}.
+The message tenc(((sid_7,ts_3,sign((fetchTag,sid_7,ts_3),skS_1)),k2_3),pk(skB[])) that the attacker may have by 8 may be received at input {144}.
+The message tenc(((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k_2),pk(skB[])) that the attacker may have in phase 1 by 36 may be received at input {149}.
+So the message (refr,cs[],rt_5,rc2_2) may be sent on channel bp[] in phase 1 at output {154}.
+mess_p1(bp[],(refr,cs[],rt_5,rc2_2)).
+
+42. The message sid_7 that may be sent on channel hprin[] by 3 may be received at input {199}.
+So the message sid_7 may be sent on channel cons[] at output {200}.
+mess(cons[],sid_7).
+
+43. The message tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])) that the attacker may have by 2 may be received at input {130}.
+The message sid_7 that may be sent on channel cons[] by 42 may be received at input {132}.
+So the message (exch,cs[],true,spk(skC[]),rc1_2) may be sent on channel bp[] at output {135}.
+mess(bp[],(exch,cs[],true,spk(skC[]),rc1_2)).
+
+44. The message (exch,cs[],true,spk(skC[]),rc1_2) that may be sent on channel bp[] by 43 may be received at input {11}.
+So the entry tok(rt_5,g_10,true,spk(skC[])) may be inserted in a table at insert {15}.
+table(tok(rt_5,g_10,true,spk(skC[]))).
+
+45. By 44, a table may contain the entry tok(rt_5,g_10,true,spk(skC[])).
+So a table may contain the entry tok(rt_5,g_10,true,spk(skC[])) in phase 1.
+table_p1(tok(rt_5,g_10,true,spk(skC[]))).
+
+46. The message (refr,cs[],rt_5,rc2_2) that may be sent on channel bp[] in phase 1 by 41 may be received at input {77}.
+The entry tok(rt_5,g_10,true,spk(skC[])) that may be in a table in phase 1 by 45 may be read at get {88}.
+So the message (at2_9,rt2_9) may be sent on channel rc2_2 in phase 1 at output {86}.
+mess_p1(rc2_2,(at2_9,rt2_9)).
+
+47. The message tenc(((sid_7,ss_5,pk(skE_1),spk(skS_1)),k1_3),pk(skB[])) that the attacker may have by 2 may be received at input {130}.
+The message sid_7 that may be sent on channel cons[] by 15 may be received at input {132}.
+The message (at_5,rt_5,g_10) that may be sent on channel rc1_2 by 18 may be received at input {136}.
+The message tenc(((sid_7,ts_3,sign((fetchTag,sid_7,ts_3),skS_1)),k2_3),pk(skB[])) that the attacker may have by 8 may be received at input {144}.
+The message tenc(((sid_7,rt_5,opid_3,sign((renewTag,sid_7,h(rt_5),opid_3),skS_1)),k_2),pk(skB[])) that the attacker may have in phase 1 by 36 may be received at input {149}.
+The message (at2_9,rt2_9) that may be sent on channel rc2_2 in phase 1 by 46 may be received at input {155}.
+So the message senc((gid2_3,seal(at2_9,pk(skE_1),(sid_7,gid2_3,tagAT,one),r3_2),seal(rt2_9,pk(skE_1),(sid_7,gid2_3,tagRT,one),r4_2)),k_2) may be sent to the attacker in phase 1 at output {159}.
+attacker_p1(senc((gid2_3,seal(at2_9,pk(skE_1),(sid_7,gid2_3,tagAT,one),r3_2),seal(rt2_9,pk(skE_1),(sid_7,gid2_3,tagRT,one),r4_2)),k_2)).
+
+48. By 47, the attacker may know senc((gid2_3,seal(at2_9,pk(skE_1),(sid_7,gid2_3,tagAT,one),r3_2),seal(rt2_9,pk(skE_1),(sid_7,gid2_3,tagRT,one),r4_2)),k_2) in phase 1.
+By 14, the attacker may know k_2 in phase 1.
+Using the function sdec the attacker may obtain (gid2_3,seal(at2_9,pk(skE_1),(sid_7,gid2_3,tagAT,one),r3_2),seal(rt2_9,pk(skE_1),(sid_7,gid2_3,tagRT,one),r4_2)) in phase 1.
+attacker_p1((gid2_3,seal(at2_9,pk(skE_1),(sid_7,gid2_3,tagAT,one),r3_2),seal(rt2_9,pk(skE_1),(sid_7,gid2_3,tagRT,one),r4_2))).
+
+49. By 48, the attacker may know (gid2_3,seal(at2_9,pk(skE_1),(sid_7,gid2_3,tagAT,one),r3_2),seal(rt2_9,pk(skE_1),(sid_7,gid2_3,tagRT,one),r4_2)) in phase 1.
+Using the function 3-proj-3-tuple the attacker may obtain seal(rt2_9,pk(skE_1),(sid_7,gid2_3,tagRT,one),r4_2) in phase 1.
+attacker_p1(seal(rt2_9,pk(skE_1),(sid_7,gid2_3,tagRT,one),r4_2)).
+
+50. By 48, the attacker may know (gid2_3,seal(at2_9,pk(skE_1),(sid_7,gid2_3,tagAT,one),r3_2),seal(rt2_9,pk(skE_1),(sid_7,gid2_3,tagRT,one),r4_2)) in phase 1.
+Using the function 2-proj-3-tuple the attacker may obtain seal(at2_9,pk(skE_1),(sid_7,gid2_3,tagAT,one),r3_2) in phase 1.
+attacker_p1(seal(at2_9,pk(skE_1),(sid_7,gid2_3,tagAT,one),r3_2)).
+
+51. By 48, the attacker may know (gid2_3,seal(at2_9,pk(skE_1),(sid_7,gid2_3,tagAT,one),r3_2),seal(rt2_9,pk(skE_1),(sid_7,gid2_3,tagRT,one),r4_2)) in phase 1.
+Using the function 1-proj-3-tuple the attacker may obtain gid2_3 in phase 1.
+attacker_p1(gid2_3).
+
+52. By 51, the attacker may know gid2_3 in phase 1.
+By 50, the attacker may know seal(at2_9,pk(skE_1),(sid_7,gid2_3,tagAT,one),r3_2) in phase 1.
+By 49, the attacker may know seal(rt2_9,pk(skE_1),(sid_7,gid2_3,tagRT,one),r4_2) in phase 1.
+Using the function 3-tuple the attacker may obtain (gid2_3,seal(at2_9,pk(skE_1),(sid_7,gid2_3,tagAT,one),r3_2),seal(rt2_9,pk(skE_1),(sid_7,gid2_3,tagRT,one),r4_2)) in phase 1.
+attacker_p1((gid2_3,seal(at2_9,pk(skE_1),(sid_7,gid2_3,tagAT,one),r3_2),seal(rt2_9,pk(skE_1),(sid_7,gid2_3,tagRT,one),r4_2))).
+
+53. By 52, the attacker may know (gid2_3,seal(at2_9,pk(skE_1),(sid_7,gid2_3,tagAT,one),r3_2),seal(rt2_9,pk(skE_1),(sid_7,gid2_3,tagRT,one),r4_2)) in phase 1.
+By 13, the attacker may know k3_3 in phase 1.
+Using the function senc the attacker may obtain senc((gid2_3,seal(at2_9,pk(skE_1),(sid_7,gid2_3,tagAT,one),r3_2),seal(rt2_9,pk(skE_1),(sid_7,gid2_3,tagRT,one),r4_2)),k3_3) in phase 1.
+attacker_p1(senc((gid2_3,seal(at2_9,pk(skE_1),(sid_7,gid2_3,tagAT,one),r3_2),seal(rt2_9,pk(skE_1),(sid_7,gid2_3,tagRT,one),r4_2)),k3_3)).
+
+54. The message (sid_7,ss_5) that may be sent on channel hreq[] by 1 may be received at input {204}.
+The message senc((gid_4,seal(at_6,pk(skE_1),(sid_7,gid_4,tagAT,zero),r1_3),seal(rt_6,pk(skE_1),(sid_7,gid_4,tagRT,zero),r2_3)),k2_3) that the attacker may have by 9 may be received at input {212}.
+The message senc((gid2_3,seal(at2_9,pk(skE_1),(sid_7,gid2_3,tagAT,one),r3_2),seal(rt2_9,pk(skE_1),(sid_7,gid2_3,tagRT,one),r4_2)),k3_3) that the attacker may have in phase 1 by 53 may be received at input {220}.
+So event RunnerRenewed(sid_7,rt2_9) may be executed at {224}.
+event(RunnerRenewed(sid_7,rt2_9)).
+
+55. By 54, event(RunnerRenewed(sid_7,rt2_9)).
+The goal is reached, represented in the following fact:
+event(RunnerRenewed(sid_7,rt2_9)).
+
+
+Unified @sid_2 with @sid_4
+The clause after UnifyDerivationPrecise is
+attacker_p1(k_2) -> event(RunnerRenewed(sid_1[!1 = @sid],rt2_3[cvk_5 = spk(skC[]),hon_5 = true,g_5 = g[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],rc_3 = rc2[m3 = tenc(((sid_1[!1 = @sid],rt[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],opid_2[c = senc((gid[g_8 = g[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],rt_2 = rt[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],at_2 = at[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],seal(at[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),(sid_1[!1 = @sid],gid[g_8 = g[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],rt_2 = rt[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],at_2 = at[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],tagAT,zero),r1[g_8 = g[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],rt_2 = rt[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],at_2 = at[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid]),seal(rt[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),(sid_1[!1 = @sid],gid[g_8 = g[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],rt_2 = rt[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],at_2 = at[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],tagRT,zero),r2[g_8 = g[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],rt_2 = rt[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],at_2 = at[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid])),k2_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1],sign((renewTag,sid_1[!1 = @sid],h(rt[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4]),opid_2[c = senc((gid[g_8 = g[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],rt_2 = rt[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],at_2 = at[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],seal(at[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),(sid_1[!1 = @sid],gid[g_8 = g[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],rt_2 = rt[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],at_2 = at[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],tagAT,zero),r1[g_8 = g[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],rt_2 = rt[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],at_2 = at[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid]),seal(rt[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),(sid_1[!1 = @sid],gid[g_8 = g[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],rt_2 = rt[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],at_2 = at[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],tagRT,zero),r2[g_8 = g[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],rt_2 = rt[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],at_2 = at[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid])),k2_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k_2),pk(skB[])),m2 = tenc(((sid_1[!1 = @sid],ts_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1],sign((fetchTag,sid_1[!1 = @sid],ts_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k2_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),g_8 = g[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],rt_2 = rt[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],at_2 = at[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],rtp_3 = rt[rc = rc1[m1 = tenc(((sid_1[!1 = @sid],ss[!1 = @sid],pk(skE[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),spk(skS[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1])),k1_2[ss_4 = ss[!1 = @sid],sid_6 = sid_1[!1 = @sid],!1 = @sid_1]),pk(skB[])),!1 = @sid],cvk = spk(skC[]),hon = true,!1 = @sid_4],!1 = @sid_3]))
+This clause still contradicts the query.
+A more detailed output of the traces is available with
+  set traceDisplay = long.
+
+new skB: skey creating skB_2 at {1}
+
+new skP: skey creating skP_3 at {2}
+
+new cs: bitstring creating cs_4 at {3}
+
+new kc: key creating kc_2 at {4}
+
+new skC: sskey creating skC_2 at {5}
+
+out(net, ~M) with ~M = pk(skB_2) at {6}
+
+out(net, ~M_1) with ~M_1 = pk(skP_3) at {7}
+
+new sid_1: bitstring creating sid_8 at {122} in copy a
+
+new ss: bitstring creating ss_6 at {123} in copy a
+
+out(hprin, sid_8) at {124} in copy a received at {199} in copy a_1
+
+out(net, (~M_2,~M_3)) with ~M_2 = sid_8, ~M_3 = h(ss_6) at {129} in copy a
+
+out(hreq, (sid_8,ss_6)) at {125} in copy a received at {204} in copy a_2
+
+new skE: skey creating skE_2 at {205} in copy a_2
+
+new skS: sskey creating skS_2 at {206} in copy a_2
+
+new k1_2: key creating k1_4 at {207} in copy a_2
+
+out(net, ~M_4) with ~M_4 = tenc(((sid_8,ss_6,pk(skE_2),spk(skS_2)),k1_4),pk(skB_2)) at {208} in copy a_2
+
+new ts_2: bitstring creating ts_4 at {209} in copy a_2
+
+new k2_2: key creating k2_4 at {210} in copy a_2
+
+out(net, ~M_5) with ~M_5 = tenc(((sid_8,ts_4,sign((fetchTag,sid_8,ts_4),skS_2)),k2_4),pk(skB_2)) at {211} in copy a_2
+
+in(net, ~M_4) with ~M_4 = tenc(((sid_8,ss_6,pk(skE_2),spk(skS_2)),k1_4),pk(skB_2)) at {130} in copy a
+
+out(cons, sid_8) at {200} in copy a_1 received at {132} in copy a
+
+new rc1: channel creating rc1_3 at {134} in copy a
+
+out(bp, (exch,cs_4,true,spk(skC_2),rc1_3)) at {135} in copy a received at {11} in copy a_3
+
+new at: bitstring creating at_7 at {12} in copy a_3
+
+new rt: bitstring creating rt_7 at {13} in copy a_3
+
+new g: bitstring creating g_12 at {14} in copy a_3
+
+insert tok(rt_7,g_12,true,spk(skC_2)) at {15} in copy a_3
+
+event HonestToken(at_7) at {17} in copy a_3
+
+event HonestToken(rt_7) at {18} in copy a_3
+
+out(rc1_3, (at_7,rt_7,g_12)) at {19} in copy a_3 received at {136} in copy a
+
+new gid: bitstring creating gid_5 at {137} in copy a
+
+new r1: nonce creating r1_4 at {138} in copy a
+
+new r2: nonce creating r2_4 at {139} in copy a
+
+out(net, (~M_6,~M_7,~M_8,~M_9)) with ~M_6 = gid_5, ~M_7 = seal(at_7,pk(skE_2),(sid_8,gid_5,tagAT,zero),r1_4), ~M_8 = seal(rt_7,pk(skE_2),(sid_8,gid_5,tagRT,zero),r2_4), ~M_9 = hmac((g_12,zero,rt_7),kc_2) at {143} in copy a
+
+in(net, ~M_5) with ~M_5 = tenc(((sid_8,ts_4,sign((fetchTag,sid_8,ts_4),skS_2)),k2_4),pk(skB_2)) at {144} in copy a
+
+out(net, ~M_10) with ~M_10 = senc((gid_5,seal(at_7,pk(skE_2),(sid_8,gid_5,tagAT,zero),r1_4),seal(rt_7,pk(skE_2),(sid_8,gid_5,tagRT,zero),r2_4)),k2_4) at {147} in copy a
+
+in(net, ~M_10) with ~M_10 = senc((gid_5,seal(at_7,pk(skE_2),(sid_8,gid_5,tagAT,zero),r1_4),seal(rt_7,pk(skE_2),(sid_8,gid_5,tagRT,zero),r2_4)),k2_4) at {212} in copy a_2
+
+out(net, ~M_11) with ~M_11 = skB_2 at {226}
+
+out(net, ~M_12) with ~M_12 = cs_4 at {227}
+
+out(net, ~M_13) with ~M_13 = kc_2 at {228}
+
+out(net, ~M_14) with ~M_14 = skC_2 at {229}
+
+new opid_2: bitstring creating opid_5 at {217} in copy a_2
+
+new k3_2: key creating k3_5 at {218} in copy a_2
+
+out(net, ~M_15) with ~M_15 = tenc(((sid_8,rt_7,opid_5,sign((renewTag,sid_8,h(rt_7),opid_5),skS_2)),k3_5),pk(skB_2)) at {219} in copy a_2
+
+in(net, tenc(((~M_2,2-proj-4-tuple(1-proj-2-tuple(tdec(~M_15,~M_11))),3-proj-4-tuple(1-proj-2-tuple(tdec(~M_15,~M_11))),4-proj-4-tuple(1-proj-2-tuple(tdec(~M_15,~M_11)))),a_4),~M)) with tenc(((~M_2,2-proj-4-tuple(1-proj-2-tuple(tdec(~M_15,~M_11))),3-proj-4-tuple(1-proj-2-tuple(tdec(~M_15,~M_11))),4-proj-4-tuple(1-proj-2-tuple(tdec(~M_15,~M_11)))),a_4),~M) = tenc(((sid_8,rt_7,opid_5,sign((renewTag,sid_8,h(rt_7),opid_5),skS_2)),a_4),pk(skB_2)) at {149} in copy a
+
+new rc2: channel creating rc2_3 at {153} in copy a
+
+out(bp, (refr,cs_4,rt_7,rc2_3)) at {154} in copy a received at {77} in copy a_5
+
+get tok(rt_7,g_12,true,spk(skC_2)) at {88} in copy a_5
+
+new at2_3: bitstring creating at2_10 at {78} in copy a_5
+
+new rt2_3: bitstring creating rt2_10 at {79} in copy a_5
+
+insert tok2(rt2_10,g_12,true) at {80} in copy a_5
+
+event HonestToken(at2_10) at {82} in copy a_5
+
+event HonestToken(rt2_10) at {83} in copy a_5
+
+event HonestNew(at2_10) at {84} in copy a_5
+
+event HonestNew(rt2_10) at {85} in copy a_5
+
+out(rc2_3, (at2_10,rt2_10)) at {86} in copy a_5 received at {155} in copy a
+
+new gid2: bitstring creating gid2_4 at {156} in copy a
+
+new r3: nonce creating r3_3 at {157} in copy a
+
+new r4: nonce creating r4_3 at {158} in copy a
+
+out(net, ~M_16) with ~M_16 = senc((gid2_4,seal(at2_10,pk(skE_2),(sid_8,gid2_4,tagAT,one),r3_3),seal(rt2_10,pk(skE_2),(sid_8,gid2_4,tagRT,one),r4_3)),a_4) at {159} in copy a
+
+in(net, senc((1-proj-3-tuple(sdec(~M_16,a_4)),2-proj-3-tuple(sdec(~M_16,a_4)),3-proj-3-tuple(sdec(~M_16,a_4))),2-proj-2-tuple(tdec(~M_15,~M_11)))) with senc((1-proj-3-tuple(sdec(~M_16,a_4)),2-proj-3-tuple(sdec(~M_16,a_4)),3-proj-3-tuple(sdec(~M_16,a_4))),2-proj-2-tuple(tdec(~M_15,~M_11))) = senc((gid2_4,seal(at2_10,pk(skE_2),(sid_8,gid2_4,tagAT,one),r3_3),seal(rt2_10,pk(skE_2),(sid_8,gid2_4,tagRT,one),r4_3)),k3_5) at {220} in copy a_2
+
+event RunnerRenewed(sid_8,rt2_10) at {224} in copy a_2 (goal)
+
+The event RunnerRenewed(sid_8,rt2_10) is executed at {224} in copy a_2.
+A trace has been found.
+RESULT not event(RunnerRenewed(s,t)) is false.
+
+--------------------------------------------------------------
+Verification summary:
+
+Query not (event(HonestToken(x)) && attacker_p1(x)) is false.
+
+Query not (event(HonestNew(x)) && attacker_p1(x)) is false.
+
+Query not event(RunnerRenewed(s,t)) is false.
+
+--------------------------------------------------------------
+

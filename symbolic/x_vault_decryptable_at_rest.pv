@@ -26,7 +26,7 @@ reduc forall m: bitstring, k: sskey; getmsg(sign(m, k)) = m.
 fun hmac(bitstring, key): bitstring.
 fun h(bitstring): bitstring.
 
-const exch, refr, fetchTag, renewTag, tagAT, tagRT, zero, one: bitstring.
+const exch, refr, revk, fetchTag, renewTag, revokeTag, tagAT, tagRT, zero, one: bitstring.
 
 (* ---------- provider state ---------- *)
 table tok(bitstring, bitstring, bool).   (* initial refresh token, grant, grant approved by the honest principal *)
@@ -38,12 +38,16 @@ event Committed(bitstring, bitstring).      (* broker bound this refresh token t
 event BrokerRefresh(bitstring, bitstring).  (* broker used the client credential for (session, token) *)
 event RunnerHolds(bitstring, bitstring).    (* honest runner accepted a refresh token for its session *)
 event RunnerRenewed(bitstring, bitstring).  (* honest runner completed a renewal *)
+event Delivered(bitstring, bitstring).      (* broker sealed this access token in a grant of this session *)
+event BrokerRevoke(bitstring, bitstring).   (* broker used the client credential to revoke (session, token) *)
 
 (* Q1 *) query x: bitstring; event(HonestToken(x)) && attacker(x) ==> false.
 (* Q2 *) query s: bitstring, t: bitstring; event(BrokerRefresh(s, t)) ==> event(Committed(s, t)).
 (* Q3 *) query s: bitstring, t: bitstring; event(RunnerHolds(s, t)) ==> event(Committed(s, t)).
 (* Q4 *) query x: bitstring; event(HonestNew(x)) && attacker(x) ==> false.
+(* Q5 *) query s: bitstring, t: bitstring; event(BrokerRevoke(s, t)) ==> event(Delivered(s, t)).
 (* R  *) query s: bitstring, t: bitstring; event(RunnerRenewed(s, t)).
+(* R2 *) query s: bitstring, t: bitstring; event(BrokerRevoke(s, t)).
 
 let Provider(cs: bitstring) =
   ( ! in(bp, (=exch, =cs, hon: bool, rc: channel));
@@ -58,6 +62,7 @@ let Provider(cs: bitstring) =
       if hon = true then (event HonestToken(at2); event HonestToken(rt2);
                           event HonestNew(at2); event HonestNew(rt2); out(rc, (at2, rt2)))
       else out(rc, (at2, rt2)) )
+  | ( ! in(bp, (=revk, =cs, tk: bitstring, rc: channel)); out(rc, tk) )   (* revocation endpoint *)
   | (* public token endpoint: anyone who has the client credential and a refresh token *)
     ( ! in(net, (=refr, =cs, rtp: bitstring));
       get tok(=rtp, g, hon) in
@@ -102,7 +107,16 @@ let SessionH(skB: skey, cs: bitstring, kc: key, kstore: key, sid: bitstring, ss:
   let cm2 = hmac((g, one, rt2), kc) in
   event Committed(sid, rt2);
   out(net, (gid2, ctA2, ctR2, cm2 , senc(rt2, kstore)));              (* stored: sealed reply and next commitment *)
-  out(net, senc((gid2, ctA2, ctR2), k3)).
+  let dd2 = hmac((sid, at2), kc) in                        (* keyed digest of the delivered token *)
+  event Delivered(sid, at2);
+  out(net, senc((gid2, ctA2, ctR2), k3));
+  (* cooperative teardown: revoke a token the runner submits *)
+  in(net, m4: bitstring);
+  let ((=sid, tk: bitstring, sg4: bitstring), k4: key) = tdec(m4, skB) in
+  if checksign(sg4, vk) = (revokeTag, sid, h(tk)) then
+  if hmac((sid, tk), kc) = dd2 then
+  event BrokerRevoke(sid, tk);
+  new rc3: channel; out(bp, (revk, cs, tk, rc3)).
 
 let SessionA(skB: skey, cs: bitstring, kc: key, kstore: key, sid: bitstring, ss: bitstring, hon: bool) =
   out(net, (sid, h(ss)));                                  (* stored: hash of the session secret *)
@@ -139,7 +153,16 @@ let SessionA(skB: skey, cs: bitstring, kc: key, kstore: key, sid: bitstring, ss:
   let cm2 = hmac((g, one, rt2), kc) in
   event Committed(sid, rt2);
   out(net, (gid2, ctA2, ctR2, cm2 , senc(rt2, kstore)));              (* stored: sealed reply and next commitment *)
-  out(net, senc((gid2, ctA2, ctR2), k3)).
+  let dd2 = hmac((sid, at2), kc) in                        (* keyed digest of the delivered token *)
+  event Delivered(sid, at2);
+  out(net, senc((gid2, ctA2, ctR2), k3));
+  (* cooperative teardown: revoke a token the runner submits *)
+  in(net, m4: bitstring);
+  let ((=sid, tk: bitstring, sg4: bitstring), k4: key) = tdec(m4, skB) in
+  if checksign(sg4, vk) = (revokeTag, sid, h(tk)) then
+  if hmac((sid, tk), kc) = dd2 then
+  event BrokerRevoke(sid, tk);
+  new rc3: channel; out(bp, (revk, cs, tk, rc3)).
 
 let Broker(skB: skey, cs: bitstring, kc: key, kstore: key) =
   ( ! new sid: bitstring; new ss: bitstring;               (* session for the honest principal *)
@@ -171,7 +194,9 @@ let Runner(pkB: pkey) =
     let at2 = unseal(ctA2, skE, (sid, gid2, tagAT, one)) in
     let rt2 = unseal(ctR2, skE, (sid, gid2, tagRT, one)) in
     event RunnerHolds(sid, rt2);
-    event RunnerRenewed(sid, rt2).
+    event RunnerRenewed(sid, rt2);
+    new k4: key;
+    out(net, tenc(((sid, at2, sign((revokeTag, sid, h(at2)), skS)), k4), pkB)).
 
 process
   new skB: skey; new cs: bitstring; new kc: key; new kstore: key;

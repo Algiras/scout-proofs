@@ -52,6 +52,44 @@ Z3 version 4.15.4 - 64 bit
   reseal_on_retry: violates S3 by Reserve -> Exchange -> Commit -> Replay
   release_after_closure: violates S4 by Reserve -> Exchange -> Commit -> Close -> Replay
 
+== Assertion-mediated renewal (unbounded generations and operations) ==
+ inductive invariant:
+  PROVED   Init => Inv
+  PROVED   Inv /\ ReserveIssue => Inv'
+  PROVED   Inv /\ Retry => Inv'
+  PROVED   Inv /\ AssertionExpires => Inv'
+  PROVED   Inv /\ RunnerExchange => Inv'
+  PROVED   Inv /\ Complete => Inv'
+  PROVED   Inv /\ Close => Inv'
+  PROVED   Inv /\ SessionEnds => Inv'
+ proved for all reachable states: M1 at most one client assertion per generation; M2 assertions only for a live, open session whose committed digest matches the held token; M3 no assertion is returned after expiry or closure
+ sanity: bounded search to depth 8 on the correct model finds no violation
+ broken variants (shortest violating trace):
+  fresh_assertion_on_retry: violates M1 by ReserveIssue -> Retry
+  reservation_released_when_assertion_expires: violates M1 by ReserveIssue -> AssertionExpires -> ReserveIssue
+  issue_without_digest_check: violates M2 by ReserveIssue -> Complete -> ReserveIssue
+  issue_after_closure: violates M2 by Close -> ReserveIssue
+  assertion_returned_after_expiry: violates M3 by ReserveIssue -> AssertionExpires -> Retry
+
+== Cooperative teardown and closure ==
+ inductive invariant:
+  PROVED   Init => Inv
+  PROVED   Inv /\ Revoke => Inv'
+  PROVED   Inv /\ Close => Inv'
+  PROVED   Inv /\ Delete => Inv'
+  PROVED   Inv /\ Deliver => Inv'
+  PROVED   Inv /\ RenewAdmit => Inv'
+  PROVED   Inv /\ RenewCommit => Inv'
+ proved for all reachable states: T1 client credential revokes only tokens delivered in this session; T2 revoked is reported only on provider acknowledgement; T3 no delivery, renewal admission or completion after closure; T4 records and the runner key are deleted only after closure; T5 closure leaves no bindings or saved ciphertext; T6 revocation requests are verified against a retained runner key
+ sanity: bounded search to depth 8 on the correct model finds no violation
+ broken variants (shortest violating trace):
+  revoke_any_submitted_token: violates T1 by Revoke
+  error_or_timeout_reported_as_revoked: violates T2 by Revoke
+  renewal_completes_after_closure: violates T3 by Close -> RenewCommit
+  delete_before_close: violates T4 by Delete
+  closure_keeps_ciphertext: violates T5 by Close
+  revoke_after_key_deleted: violates T6 by Delete -> Revoke
+
 == Authorization reservations against the root epoch (unbounded time and epochs) ==
  inductive invariant:
   PROVED   Init => Inv
@@ -81,4 +119,4 @@ Z3 version 4.15.4 - 64 bit
   Live broker process during a renewal (implemented profile) yes         yes          yes
   Live broker process (assertion-mediated design)            no          no           no
 
-RESULT: all obligations discharged (26 induction obligations, 15 broken variants with traces)
+RESULT: all obligations discharged (41 induction obligations, 26 broken variants with traces)

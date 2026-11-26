@@ -1,0 +1,32 @@
+
+p_transient_broker_compromised_at_renewal: implemented profile; the broker is compromised after delivery, before a renewal
+  ATTACK     Q1 tokens of honest grants stay secret
+  ATTACK     Q4 tokens minted by refreshing an honest grant stay secret
+  REACHABLE  sanity: an honest runner completes a renewal
+
+p_assertion_broker_compromised_at_renewal: assertion-mediated renewal; the broker is compromised after delivery, before a renewal
+  PROVED     Q1 tokens of honest grants stay secret
+  PROVED     Q4 tokens minted by refreshing an honest grant stay secret
+  REACHABLE  sanity: an honest runner completes a renewal
+
+p_assertion_per_grant_broker_compromised_at_renewal: assertion-mediated renewal with per-grant client identities; broker compromised, all client keys leak
+  PROVED     Q1 tokens of honest grants stay secret
+  PROVED     Q4 tokens minted by refreshing an honest grant stay secret
+  REACHABLE  sanity: an honest runner completes a renewal
+
+p_assertion_snapshot: assertion-mediated renewal; network and storage snapshot only
+  PROVED     Q1 tokens of honest grants stay secret
+  PROVED     Q4 tokens minted by refreshing an honest grant stay secret
+  REACHABLE  sanity: an honest runner completes a renewal
+
+p_assertion_shared_client_stolen_token: assertion-mediated renewal, one shared client identity; a refresh token is stolen
+  n/a        Q1 tokens of honest grants stay secret
+  ATTACK     Q4 tokens minted by refreshing an honest grant stay secret
+  REACHABLE  sanity: an honest runner completes a renewal
+
+p_assertion_per_grant_client_stolen_token: assertion-mediated renewal, client identity per root grant; a refresh token is stolen
+  n/a        Q1 tokens of honest grants stay secret
+  PROVED     Q4 tokens minted by refreshing an honest grant stay secret
+  REACHABLE  sanity: an honest runner completes a renewal
+
+RESULT: all scenarios as expected
