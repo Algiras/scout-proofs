@@ -1,0 +1,84 @@
+Z3 version 4.15.4 - 64 bit
+
+== Session lifecycle ==
+ inductive invariant:
+  PROVED   Init => Inv
+  PROVED   Inv /\ Bind => Inv'
+  PROVED   Inv /\ PredeclareLock => Inv'
+  PROVED   Inv /\ Consent => Inv'
+  PROVED   Inv /\ Fetch => Inv'
+  PROVED   Inv /\ Deny => Inv'
+  PROVED   Inv /\ Revoke => Inv'
+  PROVED   Inv /\ Expire => Inv'
+ proved for all reachable states: F1 tokens are minted only for a pinned runner key; F2 grants are sealed to the pinned key; F3 one principal per session; F4 terminal states are absorbing
+ sanity: bounded search to depth 8 on the correct model finds no violation
+ broken variants (shortest violating trace):
+  consent_before_bind: violates F1 by Consent
+  rebind_after_consent: violates F2 by Bind -> Consent -> Bind
+  no_principal_lock: violates F3 by Bind -> Consent -> Consent
+  expired_session_reopened: violates F4 by Expire -> Reopen
+
+== Signed single-use delivery record ==
+ inductive invariant:
+  PROVED   Init => Inv
+  PROVED   Inv /\ Fetch => Inv'
+  PROVED   Inv /\ Refetch => Inv'
+  PROVED   Inv /\ FetchOther => Inv'
+  PROVED   Inv /\ Revoke => Inv'
+ proved for all reachable states: D1 every released response is the first one; D2 nothing is released after revocation
+ sanity: bounded search to depth 8 on the correct model finds no violation
+ broken variants (shortest violating trace):
+  new_proof_gets_new_response: violates D1 by Fetch -> FetchOther
+  session_write_resets_delivery: violates D1 by Fetch -> SessionWrite -> Fetch
+  refetch_ignores_revocation: violates D2 by Fetch -> Revoke -> Refetch
+
+== Renewal control record (unbounded generations, operations, crashes) ==
+ inductive invariant:
+  PROVED   Init => Inv
+  PROVED   Inv /\ Reserve => Inv'
+  PROVED   Inv /\ Exchange => Inv'
+  PROVED   Inv /\ Commit => Inv'
+  PROVED   Inv /\ Replay => Inv'
+  PROVED   Inv /\ Crash => Inv'
+  PROVED   Inv /\ Close => Inv'
+  PROVED   Inv /\ Expire => Inv'
+ proved for all reachable states: S1 at most one provider exchange per generation; S2 client credential used only with the root's current token; S3 every delivery for a generation is the committed ciphertext; S4 no reply released after closure; S5 a committed reply stays retrievable until retired, lapsed or closed
+ sanity: bounded search to depth 8 on the correct model finds no violation
+ broken variants (shortest violating trace):
+  release_reservation_on_timeout: violates S1 by Reserve -> Exchange -> Crash -> Reserve -> Exchange
+  no_commitment_check: violates S2 by Reserve -> Exchange
+  competing_operation_admitted: violates S1 by Reserve -> Exchange -> Reserve -> Exchange
+  generation_advances_without_stored_reply: violates S5 by Reserve -> Exchange -> Commit
+  reseal_on_retry: violates S3 by Reserve -> Exchange -> Commit -> Replay
+  release_after_closure: violates S4 by Reserve -> Exchange -> Commit -> Close -> Replay
+
+== Authorization reservations against the root epoch (unbounded time and epochs) ==
+ inductive invariant:
+  PROVED   Init => Inv
+  PROVED   Inv /\ Reserve => Inv'
+  PROVED   Inv /\ Dispatch => Inv'
+  PROVED   Inv /\ Cancel => Inv'
+  PROVED   Inv /\ Tick => Inv'
+ proved for all reachable states: A1 no reservation after closure or expiry; A2 no dispatch under a superseded epoch
+ sanity: bounded search to depth 8 on the correct model finds no violation
+ broken variants (shortest violating trace):
+  check_then_reserve: violates A1 by Check -> Cancel -> Reserve
+  dispatch_without_revalidation: violates A2 by Reserve -> Cancel -> Dispatch
+
+== Delegation rule ==
+  PROVED   child = root & parent & requested & policy is non-expanding (step)
+  VIOLATED broken rule child = parent | (requested & policy)
+
+== Custody closure (symbolic, perfect cryptography) ==
+  attacker position                                          current AT  refresh tok  new AT
+  Snapshot of broker storage                                 no          no           no
+  Storage snapshot plus broker secrets at rest               no          no           no
+  Network observer of runner-broker traffic (TLS intact)     no          no           no
+  Workload (environment surface)                             yes         no           no
+  Runner memory, session closed                              yes         yes          no
+  Runner memory, session live                                yes         yes          yes
+  Runner memory, session closed, public-client provider      yes         yes          yes
+  Live broker process during a renewal (implemented profile) yes         yes          yes
+  Live broker process (assertion-mediated design)            no          no           no
+
+RESULT: all obligations discharged (26 induction obligations, 15 broken variants with traces)
