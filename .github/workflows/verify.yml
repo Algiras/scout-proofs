@@ -41,10 +41,14 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - run: sudo apt-get update && sudo apt-get install -y proverif
-      - run: python3 proofs/symbolic/gen.py
-      - run: python3 proofs/symbolic/gen_assertion.py
-      - run: python3 proofs/symbolic/gen_delegation.py
+      - run: sudo apt-get update && sudo apt-get install -y libgtk2.0-dev pkg-config
+      - uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: "5.2"
+      - run: opam install -y proverif.2.05
+      - run: opam exec -- python3 proofs/symbolic/gen.py
+      - run: opam exec -- python3 proofs/symbolic/gen_assertion.py
+      - run: opam exec -- python3 proofs/symbolic/gen_delegation.py
 
   rust:
     runs-on: ubuntu-24.04

@@ -1,0 +1,15 @@
+{
+  "font": { "family": "Helvetica, Arial, sans-serif", "baseline": 0.845, "lineHeight": 1.15 },
+  "colors": {
+    "background": "#ffffff",
+    "text": "#1e1e1e",
+    "boxStroke": "#495057",
+    "boxFill": "#f1f3f5",
+    "arrow": "#343a40",
+    "lifeline": "#adb5bd"
+  },
+  "box": { "strokeWidth": 1.5, "cornerRatio": 0.25, "maxCornerRadius": 32 },
+  "arrow": { "strokeWidth": 2, "headLength": 25, "headAngleDeg": 20 },
+  "dash": { "dash": 8, "extraWidth": 0.5 },
+  "export": { "padding": 40, "scale": 2 }
+}
