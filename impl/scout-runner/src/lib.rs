@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC-BY-4.0
+// SPDX-License-Identifier: Apache-2.0
 
 //! SCOUT runner: keys in memory only, signed requests, sealed grants opened in
 //! memory, recoverable renewal, fail-closed supervision of one child command.

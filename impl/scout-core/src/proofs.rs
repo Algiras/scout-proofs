@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC-BY-4.0
+// SPDX-License-Identifier: Apache-2.0
 
 //! Kani harnesses. Each `*_inductive` harness assumes an arbitrary state that
 //! satisfies the invariant, applies one arbitrary event and asserts the invariant,

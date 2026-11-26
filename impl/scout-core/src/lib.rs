@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC-BY-4.0
+// SPDX-License-Identifier: Apache-2.0
 
 //! Pure protocol logic. Tokens, commitments, ciphertexts and operation ids are
 //! opaque nonzero `Id`s chosen by the caller; 0 always means "none".

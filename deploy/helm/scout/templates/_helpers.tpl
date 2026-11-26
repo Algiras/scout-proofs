@@ -1,4 +1,4 @@
-{{- /* SPDX-License-Identifier: CC-BY-4.0 */ -}}
+{{- /* SPDX-License-Identifier: Apache-2.0 */ -}}
 {{- define "scout.fullname" -}}{{ .Release.Name }}-scout{{- end -}}
 {{- define "scout.labels" -}}
 app.kubernetes.io/name: scout

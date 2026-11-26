@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC-BY-4.0
+// SPDX-License-Identifier: Apache-2.0
 
 //! Ed25519 proofs over canonical JSON.
 use crate::{b64, unb64, Error};

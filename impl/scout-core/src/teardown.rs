@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC-BY-4.0
+// SPDX-License-Identifier: Apache-2.0
 
 //! Teardown and closure ordering (T1, T2, T4, T6).
 use crate::Reject;

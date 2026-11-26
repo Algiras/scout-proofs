@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC-BY-4.0
+// SPDX-License-Identifier: Apache-2.0
 
 //! Renewal control record (S1-S5, T3, T5):
 //! ACTIVE(g) -> REFRESHING(g) -> READY(g+1) -> ACTIVE(g+1), plus RECOVERY and CLOSED.

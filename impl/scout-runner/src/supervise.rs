@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC-BY-4.0
+// SPDX-License-Identifier: Apache-2.0
 
 use crate::{CallErr, Client, Grant};
 use nix::sys::signal::{killpg, Signal};

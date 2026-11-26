@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC-BY-4.0
+// SPDX-License-Identifier: Apache-2.0
 
 //! The broker's client for the upstream OAuth provider. The client secret is
 //! used only here.

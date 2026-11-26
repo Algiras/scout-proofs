@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC-BY-4.0
+// SPDX-License-Identifier: Apache-2.0
 
 //! HTTP handlers. Token values are never logged; the access log has method,
 //! path (no query) and status only.

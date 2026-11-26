@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC-BY-4.0
+// SPDX-License-Identifier: Apache-2.0
 
 //! End-to-end: real broker, mock provider and runner client over local HTTP.
 use scout_broker::provider::Provider;

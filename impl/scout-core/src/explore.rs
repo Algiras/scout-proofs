@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC-BY-4.0
+// SPDX-License-Identifier: Apache-2.0
 
 //! Ordinary-test counterparts of the Kani harnesses: breadth-first exploration
 //! of reachable states, and the inductive step checked over every state of a

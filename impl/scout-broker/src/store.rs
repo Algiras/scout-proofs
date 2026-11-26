@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC-BY-4.0
+// SPDX-License-Identifier: Apache-2.0
 
 //! Conditional key-value store. `update` is the only conditional primitive and
 //! is linearizable; the file-backed store rewrites one JSON snapshot atomically

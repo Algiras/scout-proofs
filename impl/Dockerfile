@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: CC-BY-4.0
+# SPDX-License-Identifier: Apache-2.0
 FROM rust:alpine AS build
 RUN apk add --no-cache musl-dev
 WORKDIR /src

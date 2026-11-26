@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC-BY-4.0
+// SPDX-License-Identifier: Apache-2.0
 
 //! Stored records. Protocol state lives in the `scout-core` types; the byte
 //! strings those opaque ids stand for live beside them.

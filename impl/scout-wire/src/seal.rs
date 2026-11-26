@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC-BY-4.0
+// SPDX-License-Identifier: Apache-2.0
 
 //! Seal a token to an X25519 key: ephemeral ECDH, HKDF-SHA256, AES-256-GCM.
 use crate::Error;

@@ -90,3 +90,7 @@ only; use `secrets.existingSecret` otherwise.
 - Proof nonces are not tracked for replay (proofs are bound to method, route, authority and session, and accepted within five minutes).
 - Closed markers are never garbage-collected. The HTTP server is minimal and has no TLS; terminate TLS in front of it.
 - Kani proofs cover `scout-core` only, not the shell crates.
+
+## Licence
+
+Apache License 2.0; see `LICENSE`.

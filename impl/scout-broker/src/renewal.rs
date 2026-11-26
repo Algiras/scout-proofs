@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC-BY-4.0
+// SPDX-License-Identifier: Apache-2.0
 
 //! Recoverable renewal as plain functions over the store, with an injectable
 //! clock. Every decision is made by `scout_core::renewal::step`; this file maps

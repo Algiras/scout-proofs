@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC-BY-4.0
+// SPDX-License-Identifier: Apache-2.0
 
 //! Demo workload: calls a protected URL with the access token from its environment.
 #![forbid(unsafe_code)]

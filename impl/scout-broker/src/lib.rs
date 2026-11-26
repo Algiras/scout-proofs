@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC-BY-4.0
+// SPDX-License-Identifier: Apache-2.0
 
 //! The SCOUT broker: HTTP shell around `scout-core`.
 #![forbid(unsafe_code)]

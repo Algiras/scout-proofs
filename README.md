@@ -99,4 +99,9 @@ GitHub's "Cite this repository" button gives the same reference in BibTeX and AP
 
 ## Licence
 
-[Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0); see [`LICENSE`](LICENSE). You may use, share and adapt this work for any purpose, provided you cite the paper.
+- **Paper, proofs and diagrams** (`paper/`, `proofs/`, `docs/`): [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0); see [`LICENSE`](LICENSE). You may use, share and adapt them for any purpose, provided you cite the paper.
+- **Code** (`impl/`, `deploy/`): [Apache License 2.0](impl/LICENSE).
+
+## Security
+
+See [`SECURITY.md`](SECURITY.md) for how to report a problem privately.

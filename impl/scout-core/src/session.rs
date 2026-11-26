@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC-BY-4.0
+// SPDX-License-Identifier: Apache-2.0
 
 //! Session lifecycle reducer (F1-F4).
 use crate::{Id, Reject};

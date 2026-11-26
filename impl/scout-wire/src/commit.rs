@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC-BY-4.0
+// SPDX-License-Identifier: Apache-2.0
 
 //! Keyed commitments, token digests and receipts. All use a dedicated key that
 //! must differ from the provider client secret.

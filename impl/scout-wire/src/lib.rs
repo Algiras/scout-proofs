@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC-BY-4.0
+// SPDX-License-Identifier: Apache-2.0
 
 //! Shared wire pieces: sealing, signed proofs, commitments, a tiny HTTP server and client.
 #![forbid(unsafe_code)]

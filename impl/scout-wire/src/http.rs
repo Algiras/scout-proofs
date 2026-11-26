@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC-BY-4.0
+// SPDX-License-Identifier: Apache-2.0
 
 //! A deliberately small blocking HTTP/1.1 server (one thread per connection,
 //! `Connection: close`) and a client transport that tests can wrap.

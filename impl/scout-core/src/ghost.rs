@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC-BY-4.0
+// SPDX-License-Identifier: Apache-2.0
 
 //! Specification-only wrappers: ghost history, invariants and safety predicates.
 //! Compiled for Kani and for tests, never into production.

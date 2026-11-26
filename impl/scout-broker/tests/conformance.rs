@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC-BY-4.0
+// SPDX-License-Identifier: Apache-2.0
 
 //! Exhaustive breadth-first exploration of the renewal logic: the real store,
 //! the real `scout-core` step function and an injectable clock. Every reachable

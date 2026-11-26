@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: CC-BY-4.0
+// SPDX-License-Identifier: Apache-2.0
 
 //! A small OAuth 2.0 provider for demos and tests: confidential client,
 //! single-use rotating refresh tokens, RFC 7009 revocation, fault injection.
