@@ -191,9 +191,10 @@ impl Transport for Hook {
 
 // ---- child processes ----
 
+/// Where Cargo puts final binaries; taken from this package's own binary so it does not depend on
+/// where test executables live.
 pub fn bin_dir() -> PathBuf {
-    let exe = std::env::current_exe().unwrap();
-    exe.parent().and_then(Path::parent).unwrap().to_path_buf()
+    Path::new(env!("CARGO_BIN_EXE_scoutd")).parent().unwrap().to_path_buf()
 }
 
 pub fn bin(name: &str) -> PathBuf {
