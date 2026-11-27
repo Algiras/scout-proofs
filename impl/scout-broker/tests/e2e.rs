@@ -288,8 +288,16 @@ fn state_survives_a_broker_restart() {
     *tr.arm.lock().unwrap() = Some("/renew".into());
     let _ = c.renew_raw(&g0, "op-1");
     let first = tr.captured.lock().unwrap()[0].clone();
-    // A new process over the same file: the saved reply is still there, no provider call needed.
-    let store2: Arc<dyn Store> = Arc::new(MemStore::open_file(&path).unwrap());
+    // A new process over the same file (the old broker is gone, and with it the file lock).
+    drop(env);
+    let store2: Arc<dyn Store> = (0..100)
+        .find_map(|_| {
+            MemStore::open_file(&path).ok().map(|s| Arc::new(s) as Arc<dyn Store>).or_else(|| {
+                std::thread::sleep(std::time::Duration::from_millis(50));
+                None
+            })
+        })
+        .expect("store file released");
     let r2 = Renewer::new(store2, b"commit-key-0123456789abcdef".to_vec(), "scout-demo", Arc::new(now_secs));
     let q = BeginReq { session: &c.session, op: "op-1", gen: 0, receipt: &g0.receipt, token: &g0.refresh };
     assert_eq!(r2.begin(&q), Ok(BeginOut::Replay(first)));

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
-use crate::{CallErr, Client, Grant};
+use crate::{signals, CallErr, Client, Grant};
+use nix::errno::Errno;
 use nix::sys::signal::{killpg, Signal};
 use nix::unistd::Pid;
 use scout_wire::http::{Transport, Ureq};
@@ -45,15 +46,26 @@ fn log(m: &str) {
 
 const TERMINAL: [&str; 3] = ["DENIED", "REVOKED", "EXPIRED"];
 
-/// Runs the whole flow and always attempts revocation and finalization once a
-/// session exists. Returns the child's exit code (or a nonzero failure code).
+/// Runs the whole flow and always attempts revocation and finalization once a session exists,
+/// including after SIGTERM, SIGINT, SIGHUP or a panic. Returns the child's exit code, 128 plus the
+/// signal number, or a nonzero failure code.
 pub fn run(c: &mut Client, o: &Options) -> i32 {
     let mut held: Vec<(String, String)> = vec![];
-    let code = drive(c, o, &mut held);
+    let code = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| drive(c, o, &mut held))).unwrap_or_else(|_| {
+        log("internal error; tearing down");
+        70
+    });
     if !c.session.is_empty() {
-        teardown(c, &held);
+        let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| teardown(c, &held)));
     }
     code
+}
+
+fn interrupted() -> Option<i32> {
+    signals::received().map(|s| {
+        log(&format!("received signal {s}; stopping"));
+        128 + s
+    })
 }
 
 fn teardown(c: &Client, held: &[(String, String)]) {
@@ -82,6 +94,9 @@ fn drive(c: &mut Client, o: &Options, held: &mut Vec<(String, String)>) -> i32 {
             break;
         }
         std::thread::sleep(Duration::from_secs(1));
+        if let Some(code) = interrupted() {
+            return code;
+        }
     }
     if let Err(e) = created {
         log(&format!("cannot start session: {e}"));
@@ -115,6 +130,9 @@ fn drive(c: &mut Client, o: &Options, held: &mut Vec<(String, String)>) -> i32 {
             return 72;
         }
         std::thread::sleep(Duration::from_millis(300));
+        if let Some(code) = interrupted() {
+            return code;
+        }
     }
     let mut g = match c.fetch_grant() {
         Ok(g) => g,
@@ -137,14 +155,14 @@ fn drive(c: &mut Client, o: &Options, held: &mut Vec<(String, String)>) -> i32 {
         .env("SCOUT_ACCESS_TOKEN", &g.access)
         .process_group(0)
         .spawn();
-    let mut child = match child {
-        Ok(ch) => ch,
+    let mut group = match child {
+        Ok(child) => Group { child, grace: o.kill_grace },
         Err(e) => {
             log(&format!("cannot start command: {e}"));
             return 127;
         }
     };
-    monitor(c, o, &mut child, &mut g, held)
+    monitor(c, o, &mut group.child, &mut g, held)
 }
 
 fn monitor(c: &Client, o: &Options, child: &mut Child, g: &mut Grant, held: &mut Vec<(String, String)>) -> i32 {
@@ -152,6 +170,9 @@ fn monitor(c: &Client, o: &Options, child: &mut Child, g: &mut Grant, held: &mut
     loop {
         if let Ok(Some(st)) = child.try_wait() {
             return st.code().unwrap_or(1);
+        }
+        if let Some(code) = interrupted() {
+            return code;
         }
         std::thread::sleep(Duration::from_millis(100));
         let now = (c.clock)();
@@ -165,6 +186,7 @@ fn monitor(c: &Client, o: &Options, child: &mut Child, g: &mut Grant, held: &mut
                     }
                     *g = n;
                 }
+                Err(e) if e.transient() => log(&format!("renewal not completed yet ({e}); the same operation is retried")),
                 Err(e) => {
                     log(&format!("renewal failed permanently ({e}); the capability needs fresh consent"));
                     renew_dead = true;
@@ -194,19 +216,32 @@ fn monitor(c: &Client, o: &Options, child: &mut Child, g: &mut Grant, held: &mut
         }
         if let Some(r) = reason {
             log(&format!("stopping command: {r}"));
-            kill_group(child, o.kill_grace);
             return 75;
         }
     }
 }
 
-/// SIGTERM to the whole process group, SIGKILL after the grace period.
-fn kill_group(child: &mut Child, grace: Duration) {
+/// The child's process group: whatever way the supervisor leaves, every member is stopped.
+struct Group {
+    child: Child,
+    grace: Duration,
+}
+
+impl Drop for Group {
+    fn drop(&mut self) {
+        terminate(&mut self.child, self.grace);
+    }
+}
+
+/// SIGTERM to the whole group, SIGKILL after the grace period if any member is left (even when the
+/// leader already exited), and reap the leader.
+fn terminate(child: &mut Child, grace: Duration) {
     let pg = Pid::from_raw(child.id() as i32);
     let _ = killpg(pg, Signal::SIGTERM);
     let end = Instant::now() + grace;
     while Instant::now() < end {
-        if matches!(child.try_wait(), Ok(Some(_))) {
+        let _ = child.try_wait();
+        if killpg(pg, None) == Err(Errno::ESRCH) {
             return;
         }
         std::thread::sleep(Duration::from_millis(50));

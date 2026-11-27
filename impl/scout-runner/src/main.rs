@@ -27,6 +27,7 @@ fn main() {
         renew_margin: arg_or("renew-margin", "30").parse().unwrap_or(30),
         ..defaults
     };
+    scout_runner::install_signal_handlers();
     let mut c = Client::with_ureq(&broker);
     std::process::exit(run(&mut c, &o));
 }

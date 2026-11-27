@@ -1,0 +1,19 @@
+[package]
+name = "scout-attacker"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "Attack scenario and victim for the isolated end-to-end test"
+
+[[bin]]
+name = "scout-attacker"
+path = "src/main.rs"
+
+[[bin]]
+name = "scout-victim"
+path = "src/victim.rs"
+
+[dependencies]
+scout-wire = { path = "../scout-wire" }
+scout-runner = { path = "../scout-runner" }
+serde_json = "1"

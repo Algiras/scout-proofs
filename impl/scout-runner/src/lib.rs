@@ -2,18 +2,23 @@
 
 //! SCOUT runner: keys in memory only, signed requests, sealed grants opened in
 //! memory, recoverable renewal, fail-closed supervision of one child command.
-#![forbid(unsafe_code)]
+#![deny(unsafe_code)]
 
 use ed25519_dalek::SigningKey;
 use scout_wire::http::{Transport, Ureq};
 use scout_wire::proof::{self, Envelope};
 use scout_wire::{b64, now_secs, random_bytes, seal, unb64};
 use serde_json::{json, Value};
-use std::sync::Arc;
+use std::sync::{Arc, Mutex, OnceLock};
 use x25519_dalek::StaticSecret;
 
+mod signals;
 mod supervise;
+pub use signals::install as install_signal_handlers;
 pub use supervise::{run, Options};
+
+/// Longest access token lifetime the runner believes; `expiresIn` is not covered by the sealing.
+const MAX_EXPIRES_IN: u64 = 24 * 3600;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum CallErr {
@@ -61,6 +66,14 @@ pub struct Status {
     pub deadline: u64,
 }
 
+/// A renewal that may have reached the broker: its identifiers are reused until it is resolved.
+struct Pending {
+    op: String,
+    token: String,
+    receipt: String,
+    generation: u32,
+}
+
 pub struct Client {
     pub base: String,
     pub authority: String,
@@ -74,6 +87,8 @@ pub struct Client {
     pub grant_id: String,
     pub deadline: u64,
     pub capability: String,
+    pending: Mutex<Option<Pending>>,
+    pinned_grant: OnceLock<String>,
 }
 
 impl Client {
@@ -93,6 +108,8 @@ impl Client {
             grant_id: String::new(),
             deadline: 0,
             capability: "default".into(),
+            pending: Mutex::new(None),
+            pinned_grant: OnceLock::new(),
         }
     }
 
@@ -184,7 +201,7 @@ impl Client {
             match self.post_bytes(&route, &body) {
                 Ok((s, b)) => {
                     let v = parse_reply(s, &b)?;
-                    return self.open_grant(&v, None);
+                    return self.open_inner(&v, None, Some(0));
                 }
                 Err(e) => last = e,
             }
@@ -192,9 +209,33 @@ impl Client {
         Err(last)
     }
 
+    /// Opens a reply without checking which generation it is for; the runner itself uses `renew` and `fetch_grant`.
     pub fn open_grant(&self, v: &Value, prev_refresh: Option<&str>) -> R<Grant> {
+        self.open_inner(v, prev_refresh, None)
+    }
+
+    /// The reply must come from this session and grant, and (when `generation` is given) be for exactly that generation.
+    /// The broker names the grant id it returned at session creation in every reply.
+    fn open_inner(&self, v: &Value, prev_refresh: Option<&str>, generation: Option<u32>) -> R<Grant> {
+        let untrusted = |m: &str| CallErr::Transport(format!("untrusted reply: {m}"));
         let gen = u32::try_from(v["generation"].as_u64().unwrap_or(0)).unwrap_or(u32::MAX);
         let grant = v["grant"].as_str().unwrap_or("");
+        let known = if !self.grant_id.is_empty() {
+            self.grant_id.as_str()
+        } else if prev_refresh.is_none() {
+            self.pinned_grant.get_or_init(|| grant.to_string()).as_str()
+        } else {
+            self.pinned_grant.get().map(String::as_str).unwrap_or("")
+        };
+        if grant.is_empty() || grant != known {
+            return Err(untrusted("wrong grant"));
+        }
+        if v["session"].as_str().is_some_and(|s| s != self.session) {
+            return Err(untrusted("wrong session"));
+        }
+        if generation.is_some_and(|g| g != gen) {
+            return Err(untrusted("unexpected generation"));
+        }
         let open = |kind: &str, field: &Value| -> R<String> {
             let ct = unb64(field["sealed"].as_str().unwrap_or("")).map_err(|e| CallErr::Transport(e.0))?;
             let pt = seal::open(&ct, &self.enc, &seal::aad(&self.session, grant, kind, gen)).map_err(|e| CallErr::Transport(e.0))?;
@@ -204,12 +245,13 @@ impl Client {
             Some(r) => open("refresh", r)?,
             None => prev_refresh.ok_or_else(|| CallErr::Transport("no refresh token".into()))?.to_string(),
         };
+        let ttl = v["access"]["expiresIn"].as_u64().unwrap_or(0).min(MAX_EXPIRES_IN);
         Ok(Grant {
             access: open("access", &v["access"])?,
             refresh,
             receipt: v["receipt"].as_str().unwrap_or("").into(),
             generation: gen,
-            access_expires: (self.clock)() + v["access"]["expiresIn"].as_u64().unwrap_or(0),
+            access_expires: (self.clock)().saturating_add(ttl),
         })
     }
 
@@ -231,18 +273,36 @@ impl Client {
     pub fn renew(&self, g: &Grant, op: &str) -> R<Grant> {
         let b = self.renew_raw(g, op)?;
         let v: Value = serde_json::from_slice(&b).map_err(|e| CallErr::Transport(e.to_string()))?;
-        self.open_grant(&v, Some(&g.refresh))
+        self.open_inner(&v, Some(&g.refresh), Some(g.generation.saturating_add(1)))
     }
 
-    /// Keeps the same operation identifier, token and receipt on every retry.
+    /// Keeps the same operation identifier, token and receipt on every retry, and across calls until the
+    /// operation is resolved: a reply lost earlier is still replayable under its own operation.
     pub fn renew_recoverable(&self, g: &Grant, attempts: u32, backoff: std::time::Duration) -> R<Grant> {
-        let op = scout_wire::random_id();
+        let op = {
+            let mut p = self.pending.lock().unwrap_or_else(|e| e.into_inner());
+            match p.as_ref() {
+                Some(x) if x.generation == g.generation && x.token == g.refresh && x.receipt == g.receipt => x.op.clone(),
+                _ => {
+                    let op = scout_wire::random_id();
+                    *p = Some(Pending { op: op.clone(), token: g.refresh.clone(), receipt: g.receipt.clone(), generation: g.generation });
+                    op
+                }
+            }
+        };
+        let resolve = || *self.pending.lock().unwrap_or_else(|e| e.into_inner()) = None;
         let mut last = CallErr::Transport("no attempt".into());
         for i in 0..attempts {
             match self.renew(g, &op) {
-                Ok(n) => return Ok(n),
+                Ok(n) => {
+                    resolve();
+                    return Ok(n);
+                }
                 Err(e) if e.transient() => last = e,
-                Err(e) => return Err(e),
+                Err(e) => {
+                    resolve();
+                    return Err(e);
+                }
             }
             std::thread::sleep(backoff * (i + 1));
         }

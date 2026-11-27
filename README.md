@@ -66,7 +66,7 @@ Every property is paired with a deliberately broken variant that the tool must r
 | ProVerif | Token secrecy, lineage binding, revocation scope, broker compromise, assertion-mediated renewal, supervised delegation: 17 scenarios | Active network attacker, unbounded sessions |
 | Kani | The Rust protocol core itself: 14 proof harnesses for the session, delivery, renewal and teardown properties; 4 broken variants | The real code in `impl/scout-core`, any number of steps |
 
-The Rust tests add an exhaustive search of the real renewal code against the model, and end-to-end tests for lost replies, competing operations, ambiguous provider outcomes, foreign tokens, storage snapshots and closure.
+The Rust tests add an exhaustive search of the real renewal code against the model, and end-to-end tests for lost replies, competing operations, ambiguous provider outcomes, foreign tokens, storage snapshots and closure. The code around the core was reviewed adversarially and is covered by generated malformed-request tests, concurrency and crash-restart tests, signal and process-group teardown tests, and an isolated attack scenario in which an attacker with a session of its own and a stolen refresh token must fail every attack while the victim's session completes.
 
 These are proofs about models and about the protocol core. They do not cover the HTTP and storage shell around the core, the cryptographic primitives, or a provider's behaviour. The paper states the assumptions and limits in full.
 

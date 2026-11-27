@@ -2,7 +2,7 @@
 
 //! Ed25519 proofs over canonical JSON.
 use crate::{b64, unb64, Error};
-use ed25519_dalek::{Signature, Signer, SigningKey, Verifier, VerifyingKey};
+use ed25519_dalek::{Signature, Signer, SigningKey, VerifyingKey};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sha2::{Digest, Sha256};
@@ -31,7 +31,7 @@ impl Envelope {
         let pk: [u8; 32] = pub_key.try_into().map_err(|_| Error("bad public key".into()))?;
         let vk = VerifyingKey::from_bytes(&pk).map_err(|_| Error("bad public key".into()))?;
         let sig: [u8; 64] = unb64(&self.sig)?.try_into().map_err(|_| Error("bad signature".into()))?;
-        vk.verify(&canonical(&self.body), &Signature::from_bytes(&sig)).map_err(|_| Error("bad signature".into()))?;
+        vk.verify_strict(&canonical(&self.body), &Signature::from_bytes(&sig)).map_err(|_| Error("bad signature".into()))?;
         let at = self.u64("signedAt").ok_or_else(|| Error("no signedAt".into()))?;
         if now.abs_diff(at) > WINDOW {
             return Err(Error("outside window".into()));

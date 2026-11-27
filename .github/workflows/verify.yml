@@ -89,6 +89,23 @@ jobs:
       - run: helm lint deploy/helm/scout
       - run: helm template scout deploy/helm/scout > /dev/null
 
+  kani-wire:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: model-checking/kani-github-action@v1
+        with:
+          working-directory: impl/scout-wire
+
+  isolated:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Attacker with its own session and a stolen token, on networks with no outbound access
+        run: docker compose -f impl/isolated/docker-compose.yml up --build --abort-on-container-exit --exit-code-from attacker
+      - if: always()
+        run: docker compose -f impl/isolated/docker-compose.yml down -v
+
   compose:
     runs-on: ubuntu-24.04
     steps:

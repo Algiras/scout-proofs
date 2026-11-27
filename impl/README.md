@@ -79,7 +79,34 @@ provider, a NetworkPolicy that lets only the broker reach the provider's token a
 revocation port, and an example runner Job. Generated secrets are for the demo
 only; use `secrets.existingSecret` otherwise.
 
+## Isolated attack test
+
+`isolated/docker-compose.yml` runs the broker, a mock provider whose token and revocation port is on a network only the
+broker joins, a victim session that leaks its refresh token to a shared volume, and `scout-attacker`, which sits on the
+public network with a session of its own and must have every attack refused. All networks are `internal`, containers run with a
+read-only root filesystem, no capabilities, `no-new-privileges` and a non-root user.
+
+```sh
+docker compose -f impl/isolated/docker-compose.yml up --build --abort-on-container-exit --exit-code-from attacker
+```
+
+The attacker prints `PASS <name>` or `FAIL <name>` per attack and `ATTACKS REFUSED n/n`. The same scenario runs without
+Docker in `scout-broker/tests/isolated_attack.rs` (real binaries on loopback; it cannot check network isolation).
+
+## Secrets
+
+Prefer the environment to flags, which show up in process listings: `SCOUT_CLIENT_SECRET`, `SCOUT_COMMIT_KEY`
+(broker, provider) and `SCOUT_SECRET` (runner, with `SCOUT_SESSION`) are read when the matching flag is absent. The
+`docker-compose.yml` files and the Helm chart do this.
+
 ## Limitations
+
+- Plain HTTP only: requests carry the refresh token and the session secret, so both servers must sit behind TLS.
+- Session creation and the consent start are unauthenticated and unbounded: no rate limit, and expired sessions are not garbage-collected.
+- The principal is an unauthenticated string; it is not checked against the provider account.
+- A workload that calls `setsid()` leaves the runner's process group, so it is neither signalled nor killed with the group.
+- The HTTP server caps head size (16 KiB), body size (1 MiB), connections (256) and request time (30 s total, 10 s idle per read).
+  The broker store is one file with an advisory lock (one broker per file), mode 0600.
 
 - Single broker replica and a single-file store; no replication or failover.
 - The mock provider stands in for a real one; no real provider adapter is included.
@@ -87,7 +114,9 @@ only; use `secrets.existingSecret` otherwise.
 - No supervisor or child delegation, authorization epochs or cancellation.
 - The principal is an unauthenticated string given at consent start; a deployment must put real authentication there.
 - The workload receives its access token once, in its environment; renewed tokens are held by the runner and are not pushed to the workload.
-- Proof nonces are not tracked for replay (proofs are bound to method, route, authority and session, and accepted within five minutes).
+- Proof nonces are not tracked for replay. This is acceptable because a proof is bound to method, route, authority and session and
+  is accepted for five minutes, and every state change is idempotent per operation: replaying a captured request returns the
+  same sealed reply (ciphertext only the runner can open) or is refused as stale, competing or closed.
 - Closed markers are never garbage-collected. The HTTP server is minimal and has no TLS; terminate TLS in front of it.
 - Kani proofs cover `scout-core` only, not the shell crates.
 

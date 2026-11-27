@@ -3,8 +3,11 @@
 //! Conditional key-value store. `update` is the only conditional primitive and
 //! is linearizable; the file-backed store rewrites one JSON snapshot atomically
 //! (temp file, fsync, rename) after every successful write.
+use nix::fcntl::{Flock, FlockArg};
 use scout_wire::{b64, unb64, Error};
 use std::collections::BTreeMap;
+use std::fs::{File, OpenOptions};
+use std::os::unix::fs::OpenOptionsExt;
 use std::path::PathBuf;
 use std::sync::Mutex;
 
@@ -25,6 +28,8 @@ pub trait Store: Send + Sync {
 pub struct MemStore {
     m: Mutex<BTreeMap<String, Vec<u8>>>,
     file: Option<PathBuf>,
+    /// Advisory lock on `<file>.lock`, held for the life of the store: one broker per store file.
+    _lock: Option<Flock<File>>,
 }
 
 impl MemStore {
@@ -34,23 +39,35 @@ impl MemStore {
 
     pub fn open_file(path: impl Into<PathBuf>) -> Result<MemStore, Error> {
         let path = path.into();
+        let mut lock_name = path.clone().into_os_string();
+        lock_name.push(".lock");
+        let lock_file = OpenOptions::new()
+            .create(true)
+            .truncate(false)
+            .write(true)
+            .mode(0o600)
+            .open(&lock_name)
+            .map_err(|e| Error(format!("store: cannot open lock file: {e}")))?;
+        let lock = Flock::lock(lock_file, FlockArg::LockExclusiveNonblock)
+            .map_err(|(_, e)| Error(format!("store: {} is in use by another process ({e})", path.display())))?;
         let mut m = BTreeMap::new();
         match std::fs::read(&path) {
             Ok(raw) => {
                 let enc: BTreeMap<String, String> = serde_json::from_slice(&raw).map_err(|e| Error(format!("store: {e}")))?;
                 for (k, v) in enc {
-                    m.insert(k, unb64(&v)?);
+                    let bytes = unb64(&v).map_err(|_| Error(format!("store: record {k:?} is not valid base64")))?;
+                    m.insert(k, bytes);
                 }
             }
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
             Err(e) => return Err(Error(format!("store: {e}"))),
         }
-        Ok(MemStore { m: Mutex::new(m), file: Some(path) })
+        Ok(MemStore { m: Mutex::new(m), file: Some(path), _lock: Some(lock) })
     }
 
     /// Copy of the contents as a memory-only store.
     pub fn snapshot(&self) -> MemStore {
-        MemStore { m: Mutex::new(self.dump()), file: None }
+        MemStore { m: Mutex::new(self.dump()), file: None, _lock: None }
     }
 
     fn persist(&self, m: &BTreeMap<String, Vec<u8>>) -> Result<(), Error> {
@@ -60,10 +77,16 @@ impl MemStore {
         let io = |e: std::io::Error| Error(format!("store: {e}"));
         let dir = path.parent().filter(|p| !p.as_os_str().is_empty()).map(|p| p.to_path_buf()).unwrap_or_else(|| PathBuf::from("."));
         let tmp = dir.join(format!(".scout-store-{}.tmp", scout_wire::random_id()));
-        let mut f = std::fs::File::create(&tmp).map_err(io)?;
-        std::io::Write::write_all(&mut f, &raw).map_err(io)?;
-        f.sync_all().map_err(io)?;
-        std::fs::rename(&tmp, path).map_err(io)?;
+        let written = (|| {
+            let mut f = OpenOptions::new().write(true).create_new(true).mode(0o600).open(&tmp).map_err(io)?;
+            std::io::Write::write_all(&mut f, &raw).map_err(io)?;
+            f.sync_all().map_err(io)?;
+            std::fs::rename(&tmp, path).map_err(io)
+        })();
+        if let Err(e) = written {
+            let _ = std::fs::remove_file(&tmp);
+            return Err(e);
+        }
         if let Ok(d) = std::fs::File::open(&dir) {
             let _ = d.sync_all();
         }
@@ -144,6 +167,7 @@ mod tests {
         s.update("b", &mut |_| Some(b"2".to_vec())).unwrap();
         s.update("c", &mut |_| None).unwrap();
         s.delete("b").unwrap();
+        drop(s);
         let s2 = MemStore::open_file(&p).unwrap();
         assert_eq!(s2.get("a").unwrap().unwrap(), b"1");
         assert!(s2.get("b").unwrap().is_none());

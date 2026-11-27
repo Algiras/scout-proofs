@@ -8,9 +8,10 @@ COPY scout-wire scout-wire
 COPY scout-broker scout-broker
 COPY scout-runner scout-runner
 COPY scout-mockprovider scout-mockprovider
+COPY scout-attacker scout-attacker
 RUN cargo build --release --locked --bins \
- && mkdir -p /out/usr/local/bin /out/data \
- && cp target/release/scoutd target/release/mockprovider target/release/scout-run target/release/scout-whoami /out/usr/local/bin/
+ && mkdir -p /out/usr/local/bin /out/data /out/shared \
+ && cp target/release/scoutd target/release/mockprovider target/release/scout-run target/release/scout-whoami target/release/scout-attacker target/release/scout-victim /out/usr/local/bin/
 
 # Static binaries on an empty image, running as an unprivileged user.
 FROM scratch

@@ -610,10 +610,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "scout-attacker"
+version = "0.1.0"
+dependencies = [
+ "scout-runner",
+ "scout-wire",
+ "serde_json",
+]
+
+[[package]]
 name = "scout-broker"
 version = "0.1.0"
 dependencies = [
  "ed25519-dalek",
+ "nix",
  "scout-core",
  "scout-mockprovider",
  "scout-runner",

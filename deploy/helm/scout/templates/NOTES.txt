@@ -15,3 +15,9 @@ Provider call counts (renewals, revocations):
   kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "scout.fullname" . }}-mockprovider {{ .Values.mockProvider.frontPort }}
   curl localhost:{{ .Values.mockProvider.frontPort }}/debug/stats
 {{- end }}
+
+Security notes for this reference build:
+- The broker and the mock provider speak plain HTTP. Requests carry the refresh token and the session secret, so put TLS in front of both.
+- Session creation and the consent start are unauthenticated, and there is no rate limit or garbage collection of expired sessions.
+- The principal given at consent start is not verified against the provider account.
+- A workload that calls setsid() leaves the runner's process group and is no longer supervised.

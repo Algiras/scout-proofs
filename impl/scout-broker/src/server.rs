@@ -109,7 +109,7 @@ impl Broker {
                 Ok(r) => r,
                 Err((s, code)) => Response::json(s, &json!({ "error": code })),
             };
-            eprintln!("{m} {p} {}", resp.status);
+            eprintln!("{} {} {}", scout_wire::http::log_safe(&m), scout_wire::http::log_safe(&p), resp.status);
             Some(resp)
         })
     }
@@ -189,6 +189,19 @@ impl Broker {
         unb64(s).ok().and_then(|b| b.try_into().ok()).ok_or_else(|| err(400, "bad_key"))
     }
 
+    /// X25519 key that sealing can use: not of small order.
+    fn enc_key(s: &str) -> Api<[u8; 32]> {
+        Self::pubkey(s).ok().filter(scout_wire::seal::is_contributory).ok_or_else(|| err(400, "bad_key"))
+    }
+
+    /// Ed25519 key that proofs can be checked against: a valid point of full order.
+    fn sig_key(s: &str) -> Api<[u8; 32]> {
+        Self::pubkey(s)
+            .ok()
+            .filter(|k| ed25519_dalek::VerifyingKey::from_bytes(k).is_ok_and(|v| !v.is_weak()))
+            .ok_or_else(|| err(400, "bad_key"))
+    }
+
     // ---- creation and binding ----
 
     fn create(&self, r: &Request) -> Api<Response> {
@@ -208,8 +221,8 @@ impl Broker {
             core: Sess::new(self.now() + ttl),
         };
         if v.get("encPub").is_some() || v.get("sigPub").is_some() {
-            Self::pubkey(v["encPub"].as_str().unwrap_or(""))?;
-            Self::pubkey(v["sigPub"].as_str().unwrap_or(""))?;
+            Self::enc_key(v["encPub"].as_str().unwrap_or(""))?;
+            Self::sig_key(v["sigPub"].as_str().unwrap_or(""))?;
             rec.enc_pub = v["encPub"].as_str().unwrap_or("").to_string();
             rec.sig_pub = v["sigPub"].as_str().unwrap_or("").to_string();
             self.step(&mut rec, SEv::Bind { key: 1 })?;
@@ -225,8 +238,8 @@ impl Broker {
     fn bind(&self, r: &Request, id: &str) -> Api<Response> {
         let v = json_body(r)?;
         let (enc, sig) = (v["encPub"].as_str().unwrap_or(""), v["sigPub"].as_str().unwrap_or(""));
-        Self::pubkey(enc)?;
-        Self::pubkey(sig)?;
+        Self::enc_key(enc)?;
+        Self::sig_key(sig)?;
         let secret = v["secret"].as_str().unwrap_or("");
         let s = self.mutate(id, |s| {
             let want = unb64(&s.secret_hash).unwrap_or_default();
@@ -290,15 +303,18 @@ impl Broker {
             deadline: rec.core.deadline,
         };
         let sealed_to_pinned = unb64(&rec.enc_pub).map(|b| b == nc.enc_pub).unwrap_or(false);
-        let undo = |e: ApiErr| {
-            // Nothing was delivered: do not leave the freshly minted tokens alive.
-            self.provider.discard_tokens(&tokens);
-            self.store.delete(&ctl_key(&id)).ok();
-            e
-        };
-        self.renewer.init_control(&nc, &tokens).map_err(|e| undo(renew_err(e)))?;
+        // Nothing was delivered: do not leave the freshly minted tokens alive.
+        let discard = || self.provider.discard_tokens(&tokens);
+        // A record that already exists (closed or not) is not ours to touch.
+        if let Err(e) = self.renewer.init_control(&nc, &tokens) {
+            discard();
+            return Err(renew_err(e));
+        }
         if let Err(e) = self.mutate(&id, |s| self.step(s, SEv::Authorize { seal_key: if sealed_to_pinned { 1 } else { 2 } })) {
-            return Err(undo(e));
+            discard();
+            // The record this call created is closed, not deleted: a concurrent closure stays visible.
+            self.renewer.close(&id).ok();
+            return Err(e);
         }
         Ok(Response::text(200, "authorization complete; return to the runner"))
     }
@@ -470,8 +486,11 @@ impl Broker {
 }
 
 impl Provider {
+    /// Revokes tokens that were never delivered and logs each outcome (never the token).
     pub fn discard_tokens(&self, t: &crate::provider::Tokens) {
-        use crate::provider::Refresher;
-        self.discard(t);
+        let refresh = t.refresh.as_deref().map(|r| ("refresh_token", r));
+        for (hint, tok) in [("access_token", t.access.as_str())].into_iter().chain(refresh) {
+            eprintln!("scoutd: revoking undelivered {hint}: {:?}", self.revoke(tok, hint));
+        }
     }
 }

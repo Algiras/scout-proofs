@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Demo only: the secrets below are throwaway values for a local, auto-approving mock provider.
+# They are passed in the environment (SCOUT_CLIENT_SECRET, SCOUT_COMMIT_KEY) so they do not appear on command lines.
 x-image: &image
   build: .
   image: scout:dev
@@ -8,7 +9,9 @@ services:
   mockprovider:
     <<: *image
     entrypoint: ["/usr/local/bin/mockprovider"]
-    command: ["--listen", "0.0.0.0:9000", "--client-id", "scout-demo", "--client-secret", "demo-client-secret-not-for-production", "--auto-approve", "true", "--access-ttl", "8"]
+    command: ["--listen", "0.0.0.0:9000", "--client-id", "scout-demo", "--auto-approve", "true", "--access-ttl", "8"]
+    environment:
+      SCOUT_CLIENT_SECRET: demo-client-secret-not-for-production
 
   scoutd:
     <<: *image
@@ -20,8 +23,9 @@ services:
       - --provider-token-url=http://mockprovider:9000/token
       - --provider-revoke-url=http://mockprovider:9000/revoke
       - --client-id=scout-demo
-      - --client-secret=demo-client-secret-not-for-production
-      - --commit-key=demo-commitment-key-not-for-production
+    environment:
+      SCOUT_CLIENT_SECRET: demo-client-secret-not-for-production
+      SCOUT_COMMIT_KEY: demo-commitment-key-not-for-production
 
   runner:
     <<: *image

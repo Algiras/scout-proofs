@@ -32,6 +32,11 @@ fn derive(shared: &[u8], aad: &[u8], epk: &[u8], rpk: &[u8]) -> Result<Aes256Gcm
     Aes256Gcm::new_from_slice(&k).map_err(|_| Error("key".into()))
 }
 
+/// False for keys of small order (all-zero and the other low-order points), which yield a known shared secret.
+pub fn is_contributory(public: &[u8; 32]) -> bool {
+    EphemeralSecret::random_from_rng(OsRng).diffie_hellman(&PublicKey::from(*public)).was_contributory()
+}
+
 pub fn keypair() -> (StaticSecret, [u8; 32]) {
     let s = StaticSecret::random_from_rng(OsRng);
     let p = PublicKey::from(&s).to_bytes();
@@ -62,6 +67,9 @@ pub fn open(sealed: &[u8], secret: &StaticSecret, aad: &[u8]) -> Result<Vec<u8>,
     }
     let epk: [u8; 32] = sealed[..32].try_into().map_err(|_| Error("epk".into()))?;
     let shared = secret.diffie_hellman(&PublicKey::from(epk));
+    if !shared.was_contributory() {
+        return Err(Error("low-order ephemeral key".into()));
+    }
     let rpk = PublicKey::from(secret).to_bytes();
     let g = derive(shared.as_bytes(), aad, &epk, &rpk)?;
     g.decrypt(Nonce::from_slice(&sealed[32..44]), Payload { msg: &sealed[44..], aad }).map_err(|_| Error("open failed".into()))

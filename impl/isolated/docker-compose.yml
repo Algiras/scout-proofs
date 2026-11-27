@@ -1,0 +1,81 @@
+# SPDX-License-Identifier: Apache-2.0
+# Isolated attack scenario: an attacker with a session of its own, a stolen refresh token and no access to the
+# provider's back channel must fail every attack, while the victim session finishes normally.
+#
+#   docker compose -f impl/isolated/docker-compose.yml up --build --abort-on-container-exit --exit-code-from attacker
+#
+# Throwaway secrets for a local, auto-approving mock provider; they are passed in the environment, not on command lines.
+x-hardened: &hardened
+  build:
+    context: ..
+    dockerfile: Dockerfile
+  image: scout:isolated
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  user: "65532:65532"
+  tmpfs: ["/tmp"]
+
+services:
+  mockprovider:
+    <<: *hardened
+    entrypoint: ["/usr/local/bin/mockprovider"]
+    # The back channel (token, revocation) is bound to the address it has on the back-channel network only.
+    command: ["--listen", "10.231.0.10:9000", "--backchannel-listen", "10.232.0.10:9001", "--client-id", "scout-demo", "--auto-approve", "true", "--access-ttl", "8"]
+    environment:
+      SCOUT_CLIENT_SECRET: isolated-client-secret-not-for-production
+    networks:
+      public:
+        ipv4_address: 10.231.0.10
+      backchannel:
+        ipv4_address: 10.232.0.10
+
+  scoutd:
+    <<: *hardened
+    depends_on: [mockprovider]
+    command:
+      - --listen=0.0.0.0:8080
+      - --public-base-url=http://scoutd:8080
+      - --provider-auth-url=http://mockprovider:9000/authorize
+      - --provider-token-url=http://10.232.0.10:9001/token
+      - --provider-revoke-url=http://10.232.0.10:9001/revoke
+      - --client-id=scout-demo
+    environment:
+      SCOUT_CLIENT_SECRET: isolated-client-secret-not-for-production
+      SCOUT_COMMIT_KEY: isolated-commitment-key-not-for-production
+    networks: [public, backchannel]
+
+  victim:
+    <<: *hardened
+    depends_on: [scoutd]
+    entrypoint: ["/usr/local/bin/scout-victim"]
+    command: ["--broker", "http://scoutd:8080", "--provider-front", "http://mockprovider:9000", "--shared", "/shared", "--run-seconds", "25"]
+    volumes: ["shared:/shared"]
+    networks: [public]
+
+  attacker:
+    <<: *hardened
+    depends_on: [scoutd, mockprovider, victim]
+    entrypoint: ["/usr/local/bin/scout-attacker"]
+    command:
+      - --broker=http://scoutd:8080
+      - --provider-front=http://mockprovider:9000
+      - --provider-back=mockprovider:9001,10.232.0.10:9001
+      - --shared=/shared
+    volumes: ["shared:/shared:ro"]
+    networks: [public]
+
+networks:
+  public:
+    internal: true
+    ipam:
+      config:
+        - subnet: 10.231.0.0/24
+  backchannel:
+    internal: true
+    ipam:
+      config:
+        - subnet: 10.232.0.0/24
+
+volumes:
+  shared: {}
