@@ -95,7 +95,7 @@ If you use this work, cite the paper:
 
 > Algimantas Krasauskas. *SCOUT: Split-Custody, Session-Bound Credential Renewal for Human-Authorized AI Agents*. November 2026. Zenodo. https://doi.org/10.5281/zenodo.24568572
 
-GitHub's "Cite this repository" button gives the same reference in BibTeX and APA form. That DOI always resolves to the latest version; the first published version is https://doi.org/10.5281/zenodo.24568573.
+GitHub's "Cite this repository" button gives the same reference in BibTeX and APA form. That DOI always resolves to the latest version; version 2 is https://doi.org/10.5281/zenodo.24583421 (tag `v1.1.0`) and version 1 is https://doi.org/10.5281/zenodo.24568573 (tag `v1.0.0`).
 
 ## Licence
 
