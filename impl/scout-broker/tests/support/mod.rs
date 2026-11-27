@@ -208,7 +208,13 @@ pub fn bin(name: &str) -> PathBuf {
         let ok = cmd.status().map(|s| s.success()).unwrap_or(false);
         assert!(ok, "building the workspace binaries failed");
     });
-    bin_dir().join(name)
+    // Cargo builds this package's own binary for its integration tests and tells us where it is.
+    if name == "scoutd" {
+        return PathBuf::from(env!("CARGO_BIN_EXE_scoutd"));
+    }
+    let path = bin_dir().join(name);
+    assert!(path.is_file(), "binary {name} not found at {}", path.display());
+    path
 }
 
 pub fn free_port() -> u16 {
